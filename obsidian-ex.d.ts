@@ -3,11 +3,11 @@ import {
     Command,
     Component,
     Constructor,
-    EditorRange, 
+    EditorRange,
     EventRef,
     Events,
     KeymapInfo,
-    Loc,
+    Loc, MarkdownView,
     Plugin,
     Reference,
     Scope,
@@ -27,6 +27,7 @@ import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import { IpcRenderer } from 'electron';
+import { CanvasEdgeData, CanvasNodeData } from "obsidian/canvas";
 
 export * from 'obsidian';
 
@@ -218,7 +219,7 @@ interface AppVaultConfig {
     /**
      * Editor > Properties in document
      */
-    propertiesInDocument?: 'visible' | 'hidden' | 'source'
+    propertiesInDocument?: 'visible' | 'hidden' | 'source';
     /**
      * Editor > Readable line length
      */
@@ -328,7 +329,7 @@ interface BlockCache {
 }
 
 interface CanvasConnection {
-    
+
 }
 
 interface CanvasLeaf extends WorkspaceLeaf {
@@ -336,7 +337,7 @@ interface CanvasLeaf extends WorkspaceLeaf {
 }
 
 interface CanvasNode {
-    
+
 }
 
 interface CanvasPlugin extends InternalPlugin {
@@ -344,7 +345,192 @@ interface CanvasPlugin extends InternalPlugin {
 }
 
 interface CanvasView {
-    
+    /**
+     * Reference to App
+     */
+    app: App;
+    /**
+     * @internal
+     * background pattern element for the canvas
+     */
+    backgroundPatternEl: SVGPatternElement;
+    /**
+     * @internal
+     * controls button element for the canvas (on the top right)
+     */
+    canvasControlsEl: HTMLDivElement;
+    /**
+     * @internal
+     * canvas element
+     */
+    canvasEl: HTMLDivElement;
+    /**
+     * @internal
+     * canvas rect for calculation node positions
+     */
+    canvasRect: {
+        cx: number;
+        cy: number;
+        height: number;
+        width: number;
+        top: number;
+        left: number;
+        maxX: number;
+        maxY: number;
+        minX: number;
+        minY: number;
+    };
+    /**
+     * @internal
+     * canvas card menu element (at the bottom)
+     */
+    cardMenuEl: HTMLDivElement;
+    /**
+     * @internal
+     * canvas config
+     */
+    config: {
+        defaultFileNodeDimensions: {
+            height: number;
+            width: number;
+        };
+        defaultTextNodeDimensions: {
+            height: number;
+            width: number;
+        };
+        minContainerDimension: number;
+        objectSnapDistance: number;
+        /**
+         * @internal
+         * zoom multiplier for canvas, default is 1
+         */
+        zoomMultiplier: number;
+    };
+    /**
+     * @internal
+     * canvas data
+     */
+    data: {
+        edges: CanvasConnection[];
+        nodes: CanvasNode[];
+    };
+    /**
+     * @internal
+     * canvas connection lines layer
+     */
+    edgeContainerEl: SVGElement;
+    /**
+     * @internal
+     * canvas connection ends layer
+     */
+    edgeEndContainerEl: SVGElement;
+    /**
+     * @internal
+     * map for canvas edge from node to edge
+     */
+    edgeFrom: {
+        data: Map<CanvasNode, Set<CanvasConnection>>;
+    };
+    edgeIndex: {
+        // TODO: Add CanvasEdgeIndex type
+    };
+    /**
+     * @internal
+     * map for canvas edge to node to edge
+     */
+    edgeTo: {
+        data: Map<CanvasNode, Set<CanvasConnection>>;
+    };
+    /**
+     * @internal
+     * map for canvas edges
+     */
+    edges: Map<string, CanvasConnection>;
+    /**
+     * @internal
+     * canvas history data for undo/redo
+     */
+    history: {
+        current: number;
+        max: number;
+        data: {
+            nodes: CanvasNodeData[];
+            edges: CanvasEdgeData[];
+        }
+    };
+    isDragging: boolean;
+    isHoldingSpace: boolean;
+    lastEdgesInViewport: Set<CanvasConnection>;
+    lastNodesInViewport: Set<CanvasNode>;
+    menu: {
+        canvas: CanvasView;
+        containerEl: HTMLDivElement;
+        selection: {
+            selectionEl: HTMLElement;
+            resizerEls: HTMLElement;
+            canvas: CanvasView;
+            bbox: {
+                maxX: number;
+                maxY: number;
+                minX: number;
+                minY: number;
+            } | undefined;
+
+            render(): void;
+
+            hide(): void;
+
+            onResizePointerDown(e: PointerEvent, direction: CanvasDirection): void;
+
+            update(bbox: {
+                maxX: number;
+                maxY: number;
+                minX: number;
+                minY: number;
+            }): void;
+        }
+        menuEl: HTMLDivElement;
+
+        render(): void;
+        updateZIndex(): void;
+    };
+    readonly: boolean;
+    view: MarkdownView;
+    x: number;
+    y: number;
+    nodes: Map<CanvasNodeID, CanvasNode>;
+    nodeInteractionLayer: CanvasInteractionLayer;
+    selection: Set<CanvasNode>;
+
+    wrapperEl: HTMLElement;
+    requestPushHistory: any;
+    nodeIndex: any;
+
+    importData(data: CanvasData): void;
+
+    requestSave(save?: boolean, triggerBySelf?: boolean): void;
+
+    getData(): CanvasData;
+
+    setData(data: CanvasData): void;
+
+    getEdgesForNode(node: CanvasNode): CanvasEdge[];
+
+    getContainingNodes(coords: CanvasCoords): CanvasNode[];
+
+    deselectAll(): void;
+
+    select(nodes: CanvasNode): void;
+
+    requestFrame(): void;
+
+    getViewportNodes(): CanvasNode[];
+
+    selectOnly(nodes: CanvasNode): void;
+
+    requestSave(save?: boolean, triggerBySelf?: boolean): void;
+
+    zoomToSelection(): void;
 }
 
 interface CMState extends EditorState {
@@ -397,30 +583,36 @@ interface Commands {
      * @example `editor:fold-all` or `command-palette:open`
      */
     editorCommands: Record<string, Command>;
+
     /**
      * Add a command to the command registry
      * @param command Command to add
      */
     addCommand(command: Command): void;
+
     /**
      * Execute a command by reference
      * @param command Command to execute
      */
     executeCommand(command: Command): boolean;
+
     /**
      * Execute a command by ID
      * @param commandId ID of command to execute
      */
     executeCommandById(commandId: string): boolean;
+
     /**
      * Find a command by ID
      * @param commandId
      */
     findCommand(commandId: string): Command | undefined;
+
     /**
      * Lists **all** commands, both with and without editor callback
      */
     listCommands(): Command[];
+
     /**
      * Remove a command from the command registry
      * @param commandId Command to remove
@@ -485,13 +677,21 @@ interface CustomArrayDict<T> {
     data: Record<string, T[]>;
 
     add(key: string, value: T): void;
+
     remove(key: string, value: T): void;
+
     removeKey(key: string): void;
+
     get(key: string): T[] | null;
+
     keys(): string[];
+
     clear(key: string): void;
+
     clearAll(): void;
+
     contains(key: string, value: T): boolean;
+
     count(): number;
 }
 
@@ -500,10 +700,12 @@ interface CustomCSS extends Component {
      * Reference to App
      */
     app: App;
+
     /**
      * @internal
      */
     boundRaw(): void;
+
     /**
      * @internal Cache of CSS snippet filepath (relative to vault root) to CSS snippet contents
      */
@@ -525,18 +727,22 @@ interface CustomCSS extends Component {
      * @internal
      */
     queue: WeakMap<object, unknown>;
+
     /**
      * @internal
      */
     requestLoadSnippets(): void;
+
     /**
      * @internal
      */
     requestLoadTheme(): void;
+
     /**
      * @internal
      */
     requestReadThemes(): void;
+
     /**
      * List of snippets detected by Obsidian, given by their filenames
      */
@@ -560,94 +766,115 @@ interface CustomCSS extends Component {
      * @param themeName - Name of the theme to check
      */
     checkForUpdate(themeName: string): void;
+
     /**
      * Check all themes for updates
      */
     checkForUpdates(): void;
+
     /**
      * Disable translucency of application background
      */
     disableTranslucency(): void;
+
     /**
      * Fetch legacy theme CSS using the pre-v1.0.0 theme download pipeline
      * @returns string obsidian.css contents
      */
     downloadLegacyTheme(arg: { repo: string }): Promise<string>;
+
     /**
      * Enable translucency of application background
      */
     enableTranslucency(): void;
+
     /**
      * Fetch a theme's manifest using repository URL
      * @remark Do **not** include github prefix, only `username/repo`
      */
     getManifest(repoUrl: string): Promise<ThemeManifest>;
+
     /**
      * Convert snippet name to its corresponding filepath (relative to vault root)
      * @returns string `.obsidian/snippets/${snippetName}.css`
      */
     getSnippetPath(snippetName: string): string;
+
     /**
      * Returns the folder path where snippets are stored (relative to vault root)
      */
     getSnippetsFolder(): string;
+
     /**
      * Returns the folder path where themes are stored (relative to vault root)
      */
     getThemesFolder(): string;
+
     /**
      * Convert theme name to its corresponding filepath (relative to vault root)
      * @returns string `.obsidian/themes/${themeName}/theme.css`
      */
     getThemePath(themeName: string): string;
+
     /**
      * Returns whether there are themes that can be updated
      */
     hasUpdates(): boolean;
+
     /**
      * Install a legacy theme using the pre-v1.0.0 theme download pipeline<br>
      * Will create a corresponding dummy manifest for the theme
      * @remark Name will be used as the folder name for the theme
      */
     installLegacyTheme(arg: { name: string, repo: string, author: string }): Promise<void>;
+
     /**
      * Install a theme using the regular theme download pipeline
      */
     installTheme(arg: { name: string, repo: string, author: string }, version: string): Promise<void>;
+
     /**
      * Check whether a specific theme is installed by theme name
      */
     isThemeInstalled(themeName: string): boolean;
+
     /**
      * @internal
      */
     onRaw(e: unknown): void;
+
     /**
      * @internal
      */
     onload(): void;
+
     /**
      * @todo
      * @internal
      */
     readSnippets(): void;
+
     /**
      * @todo
      * @internal
      */
     readThemes(): void;
+
     /**
      * Remove a theme by theme name
      */
     removeTheme(themeName: string): Promise<void>;
+
     /**
      * Set the activation status of a snippet by snippet name
      */
     setCssEnabledStatus(snippetName: string, enabled: boolean): void;
+
     /**
      * Set the active theme by theme name
      */
     setTheme(themeName: string): void;
+
     /**
      * Set the translucency of application background
      */
@@ -721,7 +948,7 @@ interface FileExplorerView extends View {
      * Tree view of files
      */
     tree: Tree<FileTreeItem>;
-    
+
     openFileContextMenu(event: Event, fileItemElement: HTMLElement): void;
 
     /**
@@ -775,51 +1002,61 @@ interface HotkeyManager {
      * @param keys - Hotkeys to add
      */
     addDefaultHotkeys(command: string, keys: KeymapInfo[]): void;
+
     /**
      * Get hotkey associated with command ID
      * @param command - Command ID to get hotkey for
      */
     getDefaultHotkeys(command: string): KeymapInfo[];
+
     /**
      * Remove a hotkey from the default hotkeys
      * @param command - Command ID to remove hotkey from
      */
     removeDefaultHotkeys(command: string): void;
+
     /**
      * Add a hotkey to the custom hotkeys (overrides default hotkeys)
      * @param command - Command ID to add hotkey to
      * @param keys - Hotkeys to add
      */
     setHotkeys(command: string, keys: KeymapInfo[]): void;
+
     /**
      * Get hotkey associated with command ID
      * @param command - Command ID to get hotkey for
      */
     getHotkeys(command: string): KeymapInfo[];
+
     /**
      * Remove a hotkey from the custom hotkeys
      * @param command - Command ID to remove hotkey from
      */
     removeHotkeys(command: string): void;
+
     /**
      * Pretty-print hotkey of a command
      * @param command
      */
     printHotkeyForCommand(command: string): string;
+
     /**
      * Trigger a command by keyboard event
      * @param event - Keyboard event to trigger command with
      * @param keypress - Pressed key information
      */
     onTrigger(event: KeyboardEvent, keypress: KeymapInfo): boolean;
+
     /**
      * @internal Bake hotkeys (create mapping of pressed key to command ID)
      */
     bake(): void;
+
     /**
      * @internal Load hotkeys from storage
      */
     load(): void;
+
     /**
      * @internal Save custom hotkeys to storage
      */
@@ -864,25 +1101,39 @@ interface InfinityScroll {
     width: number;
 
     compute(x: unknown): unknown;
+
     findElementTop(x: unknown, y: unknown, z: unknown): unknown;
+
     getRootTop(): unknown;
+
     invalidate(x: unknown, y: unknown): unknown;
+
     invalidateAll(): unknown;
+
     measure(x: unknown, y: unknown): unknown;
+
     onResize(): unknown;
+
     onScroll(): unknown;
+
     queueCompute(): unknown;
+
     scrollIntoView(x: unknown, y: unknown): unknown;
+
     update(x: unknown, y: unknown, z: unknown, u: unknown, v: unknown, w: unknown): unknown;
+
     updateVirtualDisplay(x: unknown): unknown;
-    
+
     _layout(x: unknown, y: unknown): unknown;
+
     _measure(x: unknown): unknown;
+
     _precompute(x: unknown): unknown;
 }
 
 interface InternalPlugin extends Plugin {
     disable(): void;
+
     enable(): void;
 }
 
@@ -937,7 +1188,8 @@ interface InternalPlugins extends Events {
         "file-explorer": FileExplorerPlugin,
         "global-search": GlobalSearchPlugin,
         [key: string]: InternalPlugin,
-    }
+    };
+
     /**
      * @internal Request save of plugin configs
      */
@@ -948,13 +1200,16 @@ interface InternalPlugins extends Events {
      * @param id - ID of the plugin to get
      */
     getEnabledPluginById(id: InternalPluginName): InternalPlugin | null;
+
     getEnabledPluginById(id: 'file-explorer'): FileExplorerPlugin | null;
+
     getEnabledPluginById(id: 'global-search'): GlobalSearchPlugin | null;
 
     /**
      * Get all enabled internal plugins
      */
     getEnabledPlugins(): InternalPlugin[];
+
     /**
      * Get an internal plugin by ID
      * @param id - ID of the plugin to get
@@ -965,18 +1220,22 @@ interface InternalPlugins extends Events {
      * @internal - Load plugin configs and enable plugins
      */
     enable(): Promise<void>;
+
     /**
      * @internal
      */
     loadPlugin(arg: { id: string, name: string }): string;
+
     /**
      * @internal
      */
     onRaw(cb1: unknown, cb2: unknown): void;
+
     /**
      * @internal - Save current plugin configs
      */
     saveConfig(): Promise<void>;
+
     /**
      * @internal
      */
@@ -988,6 +1247,7 @@ interface KeyScope {
      * Callback of function to execute when key is pressed
      */
     func(): void;
+
     /**
      * Key to match
      */
@@ -1056,41 +1316,54 @@ interface MetadataTypeManager extends Events {
      * Get all registered properties of the vault
      */
     getAllProperties(): Record<string, PropertyInfo>;
+
     /**
      * Get assigned widget type for property
      */
     getAssignedType(property: string): PropertyWidgetType | null;
+
     /**
      * Get info for property
      */
     getPropertyInfo(property: string): PropertyInfo;
+
     /**
      * @internal Get expected widget type for property and the one inferred from the property value
      */
-    getTypeInfo(arg: { key: string, type: string, value: unknown }): { inferred: PropertyWidget, expected: PropertyWidget };
+    getTypeInfo(arg: { key: string, type: string, value: unknown }): {
+        inferred: PropertyWidget,
+        expected: PropertyWidget
+    };
+
     /**
      * Get all properties with an assigned widget type
      */
     getTypes(): string[];
+
     /**
      * @internal Load property types from config
      */
     loadData(): Promise<void>;
+
     /**
      * @internal Save property types to config
      */
     save(): Promise<void>;
+
     /**
      * @internal Get all properties from metadata cache
      */
     savePropertyInfo(): void;
+
     /**
      * @internal Set widget type for property
      */
     setType(property: string, type: PropertyWidgetType): Promise<void>;
+
     /**
      * @internal
      */
+
     // trigger(e: unknown): void;
     /**
      * @internal Unset widget type for property
@@ -1167,7 +1440,7 @@ interface Plugins {
     app: App;
     /**
      * Set of enabled plugin IDs
-     * @remark The plugin ids aren't guaranteed to be either active (in `app.plugins.plugins`) or installed (in `app.plugins.manifests`) 
+     * @remark The plugin ids aren't guaranteed to be either active (in `app.plugins.plugins`) or installed (in `app.plugins.manifests`)
      */
     enabledPlugins: Set<string>;
     /**
@@ -1192,78 +1465,97 @@ interface Plugins {
      * @internal Check online list for deprecated plugins to automatically disable
      */
     checkForDeprecations(): Promise<void>;
+
     /**
      * Check for plugin updates
      */
     checkForUpdates(): Promise<void>;
+
     /**
      * Unload a plugin by ID
      */
     disablePlugin(id: string): Promise<void>;
+
     /**
      * Unload a plugin by ID and save config for persistence
      */
     disablePluginAndSave(id: string): Promise<void>;
+
     /**
      * Enable a plugin by ID
      */
     enablePlugin(id: string): Promise<void>;
+
     /**
      * Enable a plugin by ID and save config for persistence
      */
     enablePluginAndSave(id: string): Promise<void>;
+
     /**
      * Get a plugin by ID
      */
     getPlugin(id: string): Plugin | null;
+
     /**
      * Get the folder where plugins are stored
      */
     getPluginFolder(): string;
+
     /**
      * @internal Load plugin manifests and enable plugins from config
      */
     initialize(): Promise<void>;
+
     /**
      * Install a plugin from a given URL
      */
     installPlugin(repo: string, version: string, manifest: PluginManifest): Promise<void>;
+
     /**
      * Check whether a plugin is deprecated
      */
     isDeprecated(id: string): boolean;
+
     /**
      * Check whether community plugins are enabled
      */
     isEnabled(): boolean;
+
     /**
      * Load a specific plugin's manifest by its folder path
      */
     loadManifest(path: string): Promise<void>;
+
     /**
      * @internal Load all plugin manifests from plugin folder
      */
     loadManifests(): Promise<void>;
+
     /**
      *Load a plugin by its ID
      */
     loadPlugin(id: string): Promise<Plugin>;
+
     /**
      * @internal
      */
     onRaw(e: unknown): void;
+
     /**
      * @internal - Save current plugin configs
      */
     saveConfig(): Promise<void>;
+
     /**
      * @internal Toggle whether community plugins are enabled
      */
     setEnable(enabled: boolean): Promise<void>;
+
     /**
      * Uninstall a plugin by ID
      */
     uninstallPlugin(id: string): Promise<void>;
+
     /**
      * Unload a plugin by ID
      */
@@ -1292,7 +1584,7 @@ interface PositionedReference extends Reference {
     position: {
         start: Loc;
         end: Loc;
-    }
+    };
 }
 
 interface PropertyInfo {
@@ -1315,6 +1607,7 @@ interface PropertyWidget {
      * @internal
      */
     default(): void;
+
     /**
      * Lucide-dev icon associated with the widget
      */
@@ -1323,10 +1616,12 @@ interface PropertyWidget {
      * @internal Name proxy
      */
     name: unknown;
+
     /**
      * @internal Render function for the widget
      */
     render(element: HTMLElement, metadataField: unknown, property: PropertyInfo): void;
+
     /**
      * @internal Reserved keys for the widget
      */
@@ -1335,13 +1630,14 @@ interface PropertyWidget {
      * Widget type
      */
     type: string;
+
     /**
      * @internal Validate correctness of property input with respects to the widget
      */
     validate(value: unknown): boolean;
 }
 
-export type PropertyWidgetType = 
+export type PropertyWidgetType =
     | 'aliases'
     | 'checkbox'
     | 'date'
@@ -1359,11 +1655,17 @@ interface ReadViewRenderer {
     lastText: string;
     previewEl: HTMLElement;
     pusherEl: HTMLElement;
+
     clear(): void;
+
     queueRender(): void;
+
     parseSync(): void;
+
     parseAsync(): void;
+
     set(text: string): void;
+
     text: string;
     sections: RendererSection[];
     asyncSections: unknown[];
@@ -1389,30 +1691,43 @@ interface RecentFileTracker {
      * @internal
      */
     collect(file: TFile): void;
+
     /**
      * Returns the last 10 opened files
      */
     getLastOpenFiles(): string[];
+
     /**
      * Get last n files of type (defaults to 10)
      */
-    getRecentFiles(arg?: { showMarkdown: boolean, showCanvas: boolean, showNonImageAttachments: boolean, showImages: boolean, maxCount: number }): string[];
+    getRecentFiles(arg?: {
+        showMarkdown: boolean,
+        showCanvas: boolean,
+        showNonImageAttachments: boolean,
+        showImages: boolean,
+        maxCount: number
+    }): string[];
+
     /**
      * Set the last opened files
      */
     load(savedFiles: string[]): void;
+
     /**
      * @internal On file create, save file to last opened files
      */
     onFileCreated(file: TFile): void;
+
     /**
      * @internal On file open, save file to last opened files
      */
     onFileOpen(prevFile: TFile, file: TFile): void;
+
     /**
      * @internal On file rename, update file path in last opened files
      */
     onRename(file: TFile, oldPath: string): void;
+
     /**
      * @internal Get last opened files
      */
@@ -1600,81 +1915,98 @@ interface Tree<T> {
      * Change the focused item to the next item in specified direction
      */
     changeFocusedItem(direction: "forwards" | "backwards"): void;
+
     /**
      * Unselect all selected items in the tree view
      */
     clearSelectedDoms(): void;
+
     /**
      * Mark tree item as deselected
      */
     deselectItem(node: TreeNode<T>): void;
+
     /**
      * Get the local storage key for the saved tree view folds
      */
     getFoldKey(): string;
+
     /**
      * Handle selection of tree item via keyboard event
      */
     handleItemSelection(event: MouseEvent, node: TreeNode<T>): void;
+
     /**
      * @internal Registers all keyboard actions to the tree view keyscope
      */
     initializeKeyboardNav(): void;
+
     /**
      * Check whether item is a valid tree item
      */
     isItem(node: TreeNode<T> | undefined): boolean;
+
     /**
      * Load the saved fold states of the tree view from local storage
      */
     loadFolds(): void;
+
     /**
      * Handle keyboard event for moving/selecting tree item below
      */
     onKeyArrowDown(event: KeyboardEvent): void;
+
     /**
      * Handle keyboard event for moving through the hierarchy of tree items (and/or folding/unfolding)
      */
     onKeyArrowLeft(event: KeyboardEvent): void;
+
     /**
      * Handle keyboard event for moving through the hierarchy of tree items (and/or folding/unfolding)
      */
     onKeyArrowRight(event: KeyboardEvent): void;
+
     /**
      * Handle keyboard event for moving/selecting tree item above
      */
     onKeyArrowUp(event: KeyboardEvent): void;
+
     /**
      * Handle keyboard event for opening tree item
      */
     onKeyOpen(event: KeyboardEvent): void;
+
     /**
      * @internal Update scroll representation on resize
      */
     onResize(): void;
+
     /**
      * Save the current fold states of the tree view to local storage
      */
     saveFolds(): void;
+
     /**
      * Mark tree item as selected
      */
     selectItem(node: TreeNode<T>): void;
+
     /**
      * Set all items in the tree view to be collapsed or expanded
      */
     setCollapseAll(collapse: boolean): void;
+
     /**
      * Set the focused item in the tree view
      */
     setFocusedItem(node: TreeNode<T>, scrollIntoView?: boolean): void;
+
     /**
      * (Un)Collapse all items in the tree view
      */
     toggleCollapseAll(): void;
 }
-    
-    
+
 
 type TreeNode<T = object> = T & {
     childrenEl: HTMLElement;
@@ -1717,7 +2049,7 @@ type TreeItem<T> = TreeNode<T> & {
      */
     onSelfClick(event: MouseEvent): void;
     /**
-     * Set clickable state of tree item 
+     * Set clickable state of tree item
      */
     setClickable(clickable: boolean): void;
     /**
@@ -1753,7 +2085,7 @@ interface ViewRegistry extends Events {
      * Called when a view of type has been registered into the registry
      */
     on(name: 'view-registered', callback: (type: string) => void): EventRef;
-    
+
     /**
      * Called when a view of type has been unregistered from the registry
      */
@@ -1769,14 +2101,17 @@ interface ViewRegistry extends Events {
      * @param extension File extension
      */
     getTypeByExtension(extension: string): string;
+
     /**
      * Get the view constructor associated with a view type
      */
     getViewCreatorByType(type: string): (leaf: WorkspaceLeaf) => View;
+
     /**
      * Check whether a view type is registered
      */
     isExtensionRegistered(extension: string): boolean;
+
     /**
      * Register a view type for a file extension
      * @param extension File extension
@@ -1784,22 +2119,27 @@ interface ViewRegistry extends Events {
      * @remark Prefer registering the extension via the Plugin class
      */
     registerExtensions(extension: string[], type: string): void;
+
     /**
      * Register a view constructor for a view type
      */
     registerView(type: string, viewCreator: (leaf: WorkspaceLeaf) => View): void;
+
     /**
      * Register a view and its associated file extensions
      */
     registerViewWithExtensions(extensions: string[], type: string, viewCreator: (leaf: WorkspaceLeaf) => View): void;
+
     /**
      * @internal
      */
+
     // trigger(type: string): void;
     /**
      * Unregister extensions for a view type
      */
     unregisterExtensions(extension: string[]): void;
+
     /**
      * Unregister a view type
      */
@@ -1966,33 +2306,40 @@ declare module 'obsidian' {
          * Sets the accent color of the application to the OS preference
          */
         adaptToSystemTheme(): void;
+
         /**
          * Sets the accent color of the application (light/dark mode)
          */
         changeTheme(theme: 'moonstone' | 'obsidian'): void;
+
         /**
          * Copies Obsidian URI of given file to clipboard
          * @param file File to generate URI for
          */
         copyObsidianUrl(file: TFile): void;
+
         /**
          * Disables all CSS transitions in the vault (until manually re-enabled)
          */
         disableCssTransition(): void;
+
         /**
          * Restarts Obsidian and renders workspace in mobile mode
          * @tutorial Very useful for testing the rendering of your plugin on mobile devices
          */
         emulateMobile(emulate: boolean): void;
+
         /**
          * Enables all CSS transitions in the vault
          */
         enableCssTransition(): void;
+
         /**
          * Manually fix all file links pointing towards image/audio/video resources in element
          * @param element Element to fix links in
          */
         fixFileLinks(element: HTMLElement): void;
+
         /**
          * Applies an obfuscation font to all text characters in the vault
          * @tutorial Useful for hiding sensitive information or sharing pretty screenshots of your vault
@@ -2000,39 +2347,47 @@ declare module 'obsidian' {
          * @remark You will have to restart the app to get normal text back
          */
         garbleText(): void;
+
         /**
          * Get the accent color of the application
          * @remark Often a better alternative than `app.vault.getConfig('accentColor')` as it returns an empty string if no accent color was set
          */
         getAccentColor(): string;
+
         /**
          * Get the current title of the application
          * @remark The title is based on the currently active leaf
          */
         getAppTitle(): string;
+
         /**
          * Get the URI for opening specified file in Obsidian
          */
         getObsidianUrl(file: TFile): string;
+
         /**
          * Get currently active spellcheck languages
          * @deprecated Originally spellcheck languages were stored in app settings,
          * languages are now stored in `localStorage.getItem(spellcheck-languages)`
          */
         getSpellcheckLanguages(): string[];
+
         /**
          * Get the current color scheme of the application
          * @remark Identical to `app.vault.getConfig('theme')`
          */
         getTheme(): 'moonstone' | 'obsidian';
+
         /**
          * Import attachments into specified folder
          */
         importAttachments(imports: ImportedAttachments[], folder: TFolder): Promise<void>;
+
         /**
          * @internal Initialize the entire application using the provided FS adapter
          */
         initializeWithAdapter(adapter: DataAdapter): Promise<void>;
+
         /**
          * Load a value from the localstorage given key
          * @param key Key of value to load
@@ -2040,50 +2395,62 @@ declare module 'obsidian' {
          * @tutorial Use load/saveLocalStorage for saving configuration data that needs to be unique to the current vault
          */
         loadLocalStorage(key: string): string;
+
         /**
          * @internal Add callback to execute on next frame
          */
         nextFrame(callback: () => void): void;
+
         /**
          * @internal Add callback to execute on next frame, and remove after execution
          */
         nextFrameOnceCallback(callback: () => void): void;
+
         /**
          * @internal Add callback to execute on next frame with promise
          */
         nextFramePromise(callback: () => Promise<void>): Promise<void>;
+
         /**
          * @internal
          */
         onMouseEvent(evt: MouseEvent): void;
+
         /**
          * @internal Execute all logged callback (called when next frame is loaded)
          */
         onNextFrame(callback: () => void): void;
+
         /**
          * Open the help vault (or site if mobile)
          */
         openHelp(): void;
+
         /**
          * Open the vault picker
          */
         openVaultChooser(): void;
+
         /**
          * Open the file with OS defined default file browser application
          */
         openWithDefaultApp(path: string): void;
+
         /**
          * @internal Register all basic application commands
          */
         registerCommands(): void;
+
         /**
          * @internal Register a hook for saving workspace data before unload
          */
         registerQuitHook(): void;
+
         /**
          * @internal Save attachment at default attachments location
          */
         saveAttachment(path: string, extension: string, data: ArrayBuffer): Promise<void>;
+
         /**
          * Save a value to the localstorage given key
          * @param key Key of value to save
@@ -2092,52 +2459,64 @@ declare module 'obsidian' {
          * @tutorial Use load/saveLocalStorage for saving configuration data that needs to be unique to the current vault
          */
         saveLocalStorage(key: string, value: unknown): void;
+
         /**
          * Set the accent color of the application
          * @remark Also updates the CSS `--accent` variables
          */
         setAccentColor(color: string): void;
+
         /**
          * Set the path where attachments should be stored
          */
         setAttachmentFolder(path: string): void;
+
         /**
          * Set the spellcheck languages
          */
         setSpellcheckLanguages(languages: string[]): void;
+
         /**
          * Set the current color scheme of the application and reload the CSS
          */
         setTheme(theme: 'moonstone' | 'obsidian'): void;
+
         /**
          * Open the OS file picker at path location
          */
         showInFolder(path: string): void;
+
         /**
          * Show the release notes for provided version as a new leaf
          * @param version Version to show release notes for (defaults to current version)
          */
         showReleaseNotes(version?: string): void;
+
         /**
          * Updates the accent color and reloads the CSS
          */
         updateAccentColor(): void;
+
         /**
          * Update the font family of the application and reloads the CSS
          */
         updateFontFamily(): void;
+
         /**
          * Update the font size of the application and reloads the CSS
          */
         updateFontSize(): void;
+
         /**
          * Update the inline title rendering in notes
          */
         updateInlineTitleDisplay(): void;
+
         /**
          * Update the color scheme of the application and reloads the CSS
          */
         updateTheme(): void;
+
         /**
          * Update the view header display in notes
          */
@@ -2200,63 +2579,76 @@ declare module 'obsidian' {
          * @param options Data write options
          */
         applyWriteOptions(normalizedPath: string, options: DataWriteOptions): Promise<void>;
+
         /**
          * Get base path of vault (OS path)
          */
         getBasePath(): string;
+
         /**
          * Get full path of file (OS path)
          * @param normalizedPath Path to file
          * @return URL path to file
          */
         getFilePath(normalizedPath: string): string;
+
         /**
          * Get full path of file (OS path)
          * @param normalizedPath Path to file
          * @return string full path to file
          */
         getFullPath(normalizedPath: string): string;
+
         /**
          * Get full path of file (OS path)
          * @param normalizedPath Path to file
          * @return string full path to file
          */
         getFullRealPath(normalizedPath: string): string;
+
         /**
          * @internal Get resource path of file (URL path)
          * @param normalizedPath Path to file
          * @return string URL of form: app://FILEHASH/path/to/file
          */
         getResourcePath(normalizedPath: string): string;
+
         /**
          * @internal Handles vault events
          */
         handler(): void;
+
         /**
          * @internal Kill file system action due to timeout
          */
         kill(): void;
+
         /**
          * @internal
          */
         killLastAction(): void;
+
         /**
          * @internal Generates `this.files` from the file system
          */
         listAll(): Promise<void>;
+
         /**
          * @internal Generates `this.files` for specific directory of the vault
          */
         listRecursive(normalizedPath: string): Promise<void>;
+
         /**
          * @internal Helper function for `listRecursive` reads children of directory
          * @param normalizedPath Path to directory
          */
         listRecursiveChild(normalizedPath: string): Promise<void>;
+
         /**
          * @internal
          */
         onFileChange(normalizedPath: string): void;
+
         /**
          * @internal
          */
@@ -2266,66 +2658,82 @@ declare module 'obsidian' {
          * @internal
          */
         reconcileDeletion(normalizedPath: string, normalizedNewPath: string, option: boolean): Promise<void>;
+
         /**
          * @internal
          */
         reconcileFile(normalizedPath: string, normalizedNewPath: string, option: boolean): Promise<void>;
+
         /**
          * @internal
          */
         reconcileFileCreation(normalizedPath: string, normalizedNewPath: string, option: boolean): Promise<void>;
+
         /**
          * @internal
          */
         reconcileFileInternal(normalizedPath: string, normalizedNewPath: string): Promise<void>;
+
         /**
          * @internal
          */
         reconcileFolderCreation(normalizedPath: string, normalizedNewPath: string): Promise<void>;
+
         /**
          * @internal
          */
         reconcileInternalFile(normalizedPath: string): Promise<void>;
+
         /**
          * @internal
          */
         reconcileSymbolicLinkCreation(normalizedPath: string, normalizedNewPath: string): Promise<void>;
+
         /**
          * @internal Remove file from files listing and trigger deletion event
          */
         removeFile(normalizedPath: string): void;
+
         /**
          * @internal
          */
         startWatchpath(normalizedPath: string): Promise<void>;
+
         /**
          * @internal Remove all listeners
          */
         stopWatch(): void;
+
         /**
          * @internal Remove listener on specific path
          */
         stopWatchPath(normalizedPath: string): void;
+
         /**
          * @internal Set whether OS is insensitive to case
          */
         testInsensitive(): void;
+
         /**
          * @internal
          */
         thingsHappening(): void;
+
         /**
          * @internal Trigger an event on handler
          */
+
         // trigger(e: unknown, t: unknown, n: unknown, i: unknown): void;
         /**
          * @internal
          */
         update(normalizedPath: string): unknown;
+
         /**
          * @internal Add change watcher to path
          */
         watch(normalizedPath: string): Promise<void>;
+
         /**
          * @internal Watch recursively for changes
          */
@@ -2345,53 +2753,77 @@ declare module 'obsidian' {
         /**
          * Make ranges of text highlighted within the editor given specified class (style)
          */
-        addHighlights(ranges: { from: EditorPosition, to: EditorPosition }[], style: 'is-flashing' | 'obsidian-search-match-highlight', remove_previous: boolean, x: boolean): void;
+        addHighlights(ranges: {
+            from: EditorPosition,
+            to: EditorPosition
+        }[], style: 'is-flashing' | 'obsidian-search-match-highlight', remove_previous: boolean, x: boolean): void;
+
         /**
          * Convert editor position to screen position
          * @param pos Editor position
          * @param mode Relative to the editor or the application window
          */
-        coordsAtPos(pos: EditorPosition, relative_to_editor: boolean): { left: number, top: number, bottom: number, right: number };
+        coordsAtPos(pos: EditorPosition, relative_to_editor: boolean): {
+            left: number,
+            top: number,
+            bottom: number,
+            right: number
+        };
+
         /**
          * Unfolds all folded lines one level up
          * @remark If level 1 and 2 headings are folded, level 2 headings will be unfolded
          */
         foldLess(): void;
+
         /**
          * Folds all the blocks that are of the lowest unfolded level
          * @remark If there is a document with level 1 and 2 headings, level 2 headings will be folded
          */
         foldMore(): void;
+
         /**
          * Get all ranges that can be folded away in the editor
          */
         getAllFoldableLines(): { from: number, to: number }[];
+
         /**
          * Get a clickable link - if it exists - at specified position
          */
-        getClickableTokenAt(pos: EditorPosition): { start: EditorPosition, end: EditorPosition, text: string, type: string } | null;
+        getClickableTokenAt(pos: EditorPosition): {
+            start: EditorPosition,
+            end: EditorPosition,
+            text: string,
+            type: string
+        } | null;
+
         /**
          * Get all blocks that were folded by their starting character position
          */
         getFoldOffsets(): Set<number>;
+
         /**
          * Checks whether the editor has a highlight of specified class
          * @remark If no style is specified, checks whether the editor has unknown highlights
          */
         hasHighlight(style?: string): boolean;
+
         /**
          * Wraps current line around specified characters
          * @remark Was added in a recent Obsidian update (1.4.0 update cycle)
          **/
         insertBlock(start: string, end: string): void;
+
         /**
          * Get the closest character position to the specified coordinates
          */
         posAtCoords(coords: { left: number, top: number }): EditorPosition;
+
         /**
          * Removes all highlights of specified class
          */
         removeHighlights(style: string): void;
+
         /**
          * Adds a search cursor to the editor
          */
@@ -2402,7 +2834,8 @@ declare module 'obsidian' {
             findPrevious(): { from: EditorPosition, to: EditorPosition };
             replace(replacement: string, origin: string): void;
             replaceAll(replacement: string, origin: string): void;
-        }
+        };
+
         /**
          * Applies specified markdown syntax to selected text or word under cursor
          */
@@ -2412,69 +2845,85 @@ declare module 'obsidian' {
          * Clean-up function executed after indenting lists
          */
         afterIndent(): void;
+
         /**
          * Expand text
          * @internal
          */
         expandText(): void;
+
         /**
          * Indents a list by one level
          */
         indentList(): void;
+
         /**
          * Insert a template callout at the current cursor position
          */
         insertCallout(): void;
+
         /**
          * Insert a template code block at the current cursor position
          */
         insertCodeblock(): void;
+
         /**
          * Insert a markdown link at the current cursor position
          */
         insertLink(): void;
+
         /**
          * Insert a mathjax equation block at the current cursor position
          */
         insertMathJax(): void;
+
         /**
          * Insert specified text at the current cursor position
          * @remark Might be broken, inserts at the end of the document
          */
         insertText(text: string): void;
+
         /**
          * Inserts a new line and continues a markdown bullet point list at the same level
          */
         newlineAndIndentContinueMarkdownList(): void;
+
         /**
          * Inserts a new line at the same indent level
          */
         newlineAndIndentOnly(): void;
+
         /**
          * Get the character position at a mouse event
          */
         posAtMouse(e: MouseEvent): EditorPosition;
+
         /**
          * Toggles blockquote syntax on paragraph under cursor
          */
         toggleBlockquote(): void;
+
         /**
          * Toggle bullet point list syntax on paragraph under cursor
          */
         toggleBulletList(): void;
+
         /**
          * Toggle checkbox syntax on paragraph under cursor
          */
         toggleCheckList(): void;
+
         /**
          * Toggle numbered list syntax on paragraph under cursor
          */
         toggleNumberList(): void;
+
         /**
          * Convert word under cursor into a wikilink
          * @param embed Whether to embed the link or not
          */
         triggerWikiLink(embed: boolean): void;
+
         /**
          * Unindents a list by one level
          */
@@ -2508,12 +2957,14 @@ declare module 'obsidian' {
          * Reference to App
          */
         app: App;
+
         /**
          * Creates a new Markdown file in specified location and opens it in a new view
          * @param path - Path to the file to create (missing folders will be created)
          * @param manner - Where to open the view containing the new file
          */
         createAndOpenMarkdownFile(path: string, location: PaneType): Promise<void>;
+
         /**
          * Create a new file in the vault at specified location
          * @param location - Location to create the file in, defaults to root
@@ -2522,30 +2973,36 @@ declare module 'obsidian' {
          * @param contents - Contents of the file to create, defaults to empty string
          */
         createNewFile(location: TFolder, filename: string, extension: string, contents: string): Promise<TFile>;
+
         /**
          * Creates a new untitled folder in the vault at specified location
          * @param location - Location to create the folder in, defaults to root
          */
         createNewFolder(location: TFolder): Promise<TFolder>;
+
         /**
          * Creates a new Markdown file in the vault at specified location
          */
         createNewMarkdownFile(location: TFolder, filename: string, contents: string): Promise<TFile>;
+
         /**
          * Creates a new Markdown file based on linktext and path
          * @param filename - Name of the file to create
          * @param path - Path to where the file should be created
          */
         createNewMarkdownFileFromLinktext(filename: string, path: string): Promise<TFile>;
+
         /**
          * @internal
          */
         getAllLinkResolutions(): [];
+
         /**
          * Gets the folder that new markdown files should be saved to, based on the current settings
          * @param path - The path of the current opened/focused file, used when the user wants new files to be created in the same folder as the current file
          */
         getMarkdownNewFileParent(path: string): TFolder;
+
         /**
          * Insert text into a file
          * @param file - File to insert text into
@@ -2555,11 +3012,13 @@ declare module 'obsidian' {
          * @param atStart - Whether to insert text at the start or end of the file
          */
         insertTextIntoFile(file: TFile, primary_text: string, basename: string, secondary_text: string, atStart: boolean): Promise<void>;
+
         /**
          * Iterate over all links in the vault with callback
          * @param callback - Callback to execute for each link
          */
         iterateAllRefs(callback: (path: string, link: PositionedReference) => void): void;
+
         /**
          * Merge two files
          * @param file - File to merge to
@@ -2568,42 +3027,51 @@ declare module 'obsidian' {
          * @param atStart - Whether to insert text at the start or end of the file
          */
         mergeFile(file: TFile, otherFile: TFile, override: string, atStart: boolean): Promise<void>;
+
         /**
          * Prompt the user to delete a file
          */
         promptForDeletion(file: TFile): Promise<void>;
+
         /**
          * Prompt the user to rename a file
          */
         promptForFileRename(file: TFile): Promise<void>;
+
         /**
          * @internal
          * Register an extension to be the parent for a specific file type
          */
         registerFileParentCreator(extension: string, location: TFolder): void;
+
         /**
          * @internal
          * @param callback - Callback to execute for each link
          */
         runAsyncLinkUpdate(callback: (link: LinkUpdate) => unknown): void;
+
         /**
          * @internal
          * @param path
          * @param data
          */
         storeTextFileBackup(path: string, data: string): void;
+
         /**
          * Remove a file and put it in the trash (no confirmation modal)
          */
         trashFile(file: TFile): Promise<void>;
+
         /**
          * @internal: Unregister extension as root input directory for file type
          */
         unregisterFileCreator(extension: string): void;
+
         /**
          * @internal
          */
         updateAllLinks(links: unknown[]): Promise<void>;
+
         /**
          * @internal
          */
@@ -2631,7 +3099,7 @@ declare module 'obsidian' {
          */
         updateQueue: {
             promise: Promise<void>
-        }
+        };
         /**
          * Reference to Vault
          */
@@ -2645,7 +3113,7 @@ declare module 'obsidian' {
     interface MarkdownEditView {
         triggerClickableToken(token: Token, new_leaf: boolean): void;
     }
-    
+
     interface MarkdownView {
         editMode: MarkdownEditView;
     }
@@ -2720,84 +3188,101 @@ declare module 'obsidian' {
          * @internal Whether the menu is loaded
          */
         _loaded: boolean;
-        
+
         /**
          * @internal Add a section to the menu
          */
         addSections(items: string[]): this;
+
         /**
          * @internal Close the currently open submenu
          */
         closeSubmenu(): void;
+
         /**
          * @internal Check whether the clicked element is inside the menu
          */
         isInside(e: HTMLElement): boolean;
+
         /**
          * @internal Move selection to the next item in the menu
          * @param e - Keyboard event
          */
         onArrowDown(e: KeyboardEvent): boolean;
+
         /**
          * @internal Move selection to the previous item in the menu
          * @param e - Keyboard event
          */
         onArrowUp(e: KeyboardEvent): boolean;
+
         /**
          * @internal Move selection into the submenu
          */
         onArrowRight(e: KeyboardEvent): boolean;
+
         /**
          * @internal Move selection out of the submenu
          */
         onArrowLeft(e: KeyboardEvent): boolean;
+
         /**
          * @internal Execute selected menu item (does nothing if item is submenu)
          */
         onEnter(e: KeyboardEvent): boolean;
+
         /**
          * @internal Pre-emptively closes the menu if click is registered on menu item
          * @param e
          */
         onMenuClick(e: MouseEvent): void;
+
         /**
          * @internal Opens submenu if mouse is hovering over item with submenu
          * @param e - Mouse event
          */
         onMouseOver(e: MouseEvent): boolean;
+
         /**
          * @internal Registers dom events and scope for the menu
          */
         onload(): void;
+
         /**
          * @internal Unregisters scope for the menu
          */
-        onunload():  void;
+        onunload(): void;
+
         /**
          * @internal Open the submenu of the selected item
          * @param item - Item to open submenu for
          */
         openSubmenu(item: MenuItem): void;
+
         /**
          * @internal Select the item at the specified index (after either hovering or arrowing over it)
          * @param index
          */
         select(index: number): void;
+
         /**
          * @internal Set the parent element of the menu (i.e. for workspace leaf context menu)
          * @param el - Element to set as parent
          */
         setParentElement(el: HTMLElement): this;
+
         /**
          * @internal Add a section to the submenu config
          * @param section
          * @param submenu
          */
-        setSectionSubmenu(section: string, submenu: {title: string, icon: string}): this;
+        setSectionSubmenu(section: string, submenu: { title: string, icon: string }): this;
+
         /**
          * @internal Sort the items in the menu
          */
         sort(): void;
+
         /**
          * @internal Unselect the currently selected item and closes the submenu
          */
@@ -2851,21 +3336,25 @@ declare module 'obsidian' {
          * @param e - Mouse or keyboard event
          */
         handleEvent(e: MouseEvent | KeyboardEvent): void;
+
         /**
          * @internal Remove the icon element from the menu item
          */
         removeIcon(): void;
+
         /**
          * @deprecated
-         * @internal Calls `setChecked`, prefer usage of that function instead  
-         * @param active - Whether the menu item should be checked 
+         * @internal Calls `setChecked`, prefer usage of that function instead
+         * @param active - Whether the menu item should be checked
          */
         setActive(active: boolean): this;
+
         /**
          * Create a submenu on the menu item
-         * @tutorial Creates the foldable menus with more options as seen when you right-click in the editor (e.g. "Insert", "Format", ...) 
+         * @tutorial Creates the foldable menus with more options as seen when you right-click in the editor (e.g. "Insert", "Format", ...)
          */
         setSubmenu(): Menu;
+
         /**
          * @internal Add warning styling to the menu item
          * @param warning - Whether the menu item should be styled as a warning
@@ -2885,7 +3374,7 @@ declare module 'obsidian' {
         /**
          * @internal IndexedDB database
          */
-        db: IDBDatabase
+        db: IDBDatabase;
         /**
          * @internal File contents cache
          */
@@ -2953,40 +3442,48 @@ declare module 'obsidian' {
          * Called whenever the metadatacache has finished updating
          */
         on(name: 'finished', callback: () => void): EventRef;
-        
+
 
         /**
          * Get all property infos of the vault
          */
-        getAllPropertyInfos(): Record<string, PropertyInfo>
+        getAllPropertyInfos(): Record<string, PropertyInfo>;
+
         /**
          * Get all backlink information for a file
          */
-        getBacklinksForFile(file?: TFile): CustomArrayDict<LinkCache>
+        getBacklinksForFile(file?: TFile): CustomArrayDict<LinkCache>;
+
         /**
          * Get paths of all files cached in the vault
          */
         getCachedFiles(): string[];
+
         /**
          * Get an entry from the file cache
          */
         getFileInfo(path: string): FileCacheEntry;
+
         /**
          * Get property values for frontmatter property key
          */
         getFrontmatterPropertyValuesForKey(key: string): string[];
+
         /**
          * Get all links (resolved or unresolved) in the vault
          */
         getLinkSuggestions(): { file: TFile | null, path: string }[];
+
         /**
          * Get destination of link path
          */
         getLinkpathDest(origin: string, path: string): TFile[];
+
         /**
          * Get all links within the vault per file
          */
         getLinks(): Record<string, Reference[]>;
+
         /**
          * Get all tags within the vault and their usage count
          */
@@ -2996,98 +3493,122 @@ declare module 'obsidian' {
          * @internal Clear all caches to null values
          */
         cleanupDeletedCache(): void;
+
         /**
          * @internal
          */
         clear(): unknown;
+
         /**
          * @internal
          */
         computeMetadataAsync(e: unknown): Promise<unknown>;
+
         /**
          * @internal Remove all entries that contain deleted path
          */
         deletePath(path: string): void;
+
         /**
          * @internal Initialize Database connection and load up caches
          */
         initialize(): Promise<void>;
+
         /**
          * @internal Check whether there are no cache tasks in progress
          */
         isCacheClean(): boolean;
+
         /**
          * @internal Check whether file can support metadata (by checking extension support)
          */
         isSupportedFile(file: TFile): boolean;
+
         /**
          * @internal Check whether string is part of the user ignore filters
          */
         isUserIgnored(filter: unknown): boolean;
+
         /**
          * Iterate over all link references in the vault with callback
          */
         iterateReferences(callback: (path: string) => void): void;
+
         /**
          * @internal
          */
         linkResolver(): void;
+
         /**
          * @internal Execute onCleanCache callbacks if cache is clean
          */
         onCleanCache(): void;
+
         /**
          * @internal On creation of the cache: update metadata cache
          */
         onCreate(file: TFile): void;
+
         /**
          * @internal On creation or modification of the cache: update metadata cache
          */
         onCreateOrModify(file: TFile): void;
+
         /**
          * @internal On deletion of the cache: update metadata cache
          */
         onDelete(file: TFile): void;
+
         /**
          * @internal
          */
         onReceiveMessageFromWorker(e: unknown): void;
+
         /**
          * @internal On rename of the cache: update metadata cache
          */
         onRename(file: TFile, oldPath: string): void;
+
         /**
          * @internal Check editor for unresolved links and mark these as unresolved
          */
         resolveLinks(editor: Element): void;
+
         /**
          * @internal Update file cache entry and sync to indexedDB
          */
         saveFileCache(path: string, entry: FileCacheEntry): void;
+
         /**
          * @internal Update metadata cache entry and sync to indexedDB
          */
         saveMetaCache(path: string, entry: CachedMetadata): void;
+
         /**
          * @internal Show a notice that the cache is being rebuilt
          */
         showIndexingNotice(): void;
+
         /**
          * @internal
          */
+
         // trigger(e: unknown): void;
         /**
          * @internal Re-resolve all links for changed path
          */
         updateRelatedLinks(path: string): void;
+
         /**
          * @internal Update user ignore filters from settings
          */
         updateUserIgnoreFilters(): void;
+
         /**
          * @internal Bind actions to listeners on vault
          */
         watchVaultChanges(): void;
+
         /**
          * @internal Send message to worker to update metadata cache
          */
@@ -3126,25 +3647,30 @@ declare module 'obsidian' {
          * @internal On escape key press close modal
          */
         onEscapeKey(): void;
+
         /**
          * @internal On closing of the modal
          */
         onWindowClose(): void;
+
         /**
          * @internal Set the background opacity of the dimmed background
          * @param opacity Opacity percentage
          */
         setBackgroundOpacity(opacity: string): this;
+
         /**
          * @internal Set the content of the modal
          * @param content Content to set
          */
         setContent(content: HTMLElement | string): this;
+
         /**
          * @internal Set whether the background should be dimmed
          * @param dim Whether the background should be dimmed
          */
         setDimBackground(dim: boolean): this;
+
         /**
          * @internal Set the title of the modal
          * @param title Title to set
@@ -3170,17 +3696,20 @@ declare module 'obsidian' {
          * @internal
          */
         tabFocusContainer: HTMLElement | null;
+
         /**
          * @internal Execute keypress within this scope
          * @param event - Keyboard event
          * @param keypress - Pressed key information
          */
         handleKey(event: KeyboardEvent, keypress: KeymapInfo): unknown;
+
         /**
          * @internal
          * @deprecated - Executes same functionality as `Scope.register`
          */
         registerKey(modifiers: Modifier[], key: string | null, func: KeymapEventListener): KeymapEventHandler;
+
         /**
          * @internal
          */
@@ -3230,35 +3759,42 @@ declare module 'obsidian' {
          * @param id ID of the tab to open
          */
         openTabById(id: string): void;
+
         /**
          * @internal Add a new plugin tab to the settings modal
          * @param tab Tab to add
          */
         addSettingTab(tab: SettingTab): void;
+
         /**
          * @internal Closes the currently active tab
          */
         closeActiveTab(): void;
+
         /**
          * @internal Check whether tab is a plugin tab
          * @param tab Tab to check
          */
         isPluginSettingTab(tab: SettingTab): boolean;
+
         /**
          * @internal Open a specific tab by tab reference
          * @param tab Tab to open
          */
         openTab(tab: SettingTab): void;
+
         /**
          * @internal Remove a plugin tab from the settings modal
          * @param tab Tab to remove
          */
         removeSettingTab(tab: SettingTab): void;
+
         /**
          * @internal Update the title of the modal
          * @param tab Tab to update the title to
          */
         updateModalTitle(tab: SettingTab): void;
+
         /**
          * @internal Update a tab section
          */
@@ -3316,7 +3852,7 @@ declare module 'obsidian' {
         startY: number;
         targetEl: HTMLElement;
         touch: Touch;
-        
+
         x: number;
         y: number;
     }
@@ -3347,7 +3883,7 @@ declare module 'obsidian' {
 
         /**
          * Called whenever any of Obsidian's settings are changed
-         * @remark Does *not* trigger when a particular plugin's settings are changed, for that, you could monkey-patch the `saveSettings` method of a plugin instance 
+         * @remark Does *not* trigger when a particular plugin's settings are changed, for that, you could monkey-patch the `saveSettings` method of a plugin instance
          */
         on(name: 'config-changed', callback: () => void, ctx?: unknown): EventRef;
 
@@ -3361,175 +3897,206 @@ declare module 'obsidian' {
          * @remark Always prefer usage of on(name: 'rename', ...) instead
          */
         // on(name: 'renamed', callback: (oldPath: string, newPath: string) => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          * @remark Always prefer usage of on(name: 'modify', ...) instead
          */
         // on(name: 'modified', callback: () => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          */
         // on(name: 'file-created', callback: () => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          */
         // on(name: 'folder-created', callback: () => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          */
         // on(name: 'file-removed', callback: () => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          */
         // on(name: 'folder-removed', callback: () => void): EventRef;
-        
+
         /**
          * @internal Not accessible
          */
+
         // on(name: 'closed', callback: () => void): EventRef;       
-        
-        
-        
+
+
         /**
          * @internal Add file as child/parent to respective folders
          */
         addChild(file: TAbstractFile): void;
+
         /**
          * @internal Check whether new file path is available
          */
         checkForDuplicate(file: TAbstractFile, newPath: string): boolean;
+
         /**
          * @internal Check whether path has valid formatting (no dots/spaces at end, ...)
          */
         checkPath(path: string): boolean;
+
         /**
          * @internal Remove a vault config file
          */
         deleteConfigJson(configFile: string): Promise<void>;
+
         /**
          * Check whether a file exists in the vault
          */
         exists(file: TAbstractFile, senstive?: boolean): Promise<boolean>;
+
         /**
          * @internal
          */
         generateFiles(e: AsyncGenerator<TFile>, t: boolean): Promise<void>;
+
         /**
          * Get an abstract file by path, insensitive to case
          */
         getAbstractFileByPathInsensitive(path: string): TAbstractFile | null;
+
         /**
          * @internal Get path for file that does not conflict with other existing files
          */
         getAvailablePath(path: string, extension: string): string;
+
         /**
          * @internal Get path for attachment that does not conflict with other existing files
          */
         getAvailablePathForAttachments(filename: string, file: TAbstractFile, extension: string): string;
+
         /**
          * Get value from config by key
          * @remark Default value will be selected if config value was not manually changed
          * @param key Key of config value
          */
         getConfig(string: ConfigItem): unknown;
+
         /**
          * Get path to config file (relative to vault root)
          */
         getConfigFile(configFile: string): string;
+
         /**
          * Get direct parent of file
          * @param file File to get parent of
          */
         getDirectParent(file: TAbstractFile): TFolder | null;
+
         /**
          * @internal Check whether files map cache is empty
          */
         isEmpty(): boolean;
+
         /**
          * @internal Iterate over the files and read them
          */
         iterateFiles(files: TFile[], cachedRead: boolean): void;
+
         /**
          * @internal Load vault adapter
          */
         load(): Promise<void>;
+
         /**
          * @internal Listener for all events on the vault
          */
         onChange(eventType: string, path: string, x: unknown, y: unknown): void;
+
         /**
          * Read a config file from the vault and parse it as JSON
          * @param config Name of config file
          */
         readConfigJson(config: string): Promise<null | object>;
+
         /**
          * Read a config file (full path) from the vault and parse it as JSON
          * @param path Full path to config file
          */
         readJson(path: string): Promise<null | object>;
+
         /**
          * Read a plugin config file (full path relative to vault root) from the vault and parse it as JSON
          * @param path Full path to plugin config file
          */
         readPluginData(path: string): Promise<null | object>;
+
         /**
          * Read a file from the vault as a string
          * @param path Path to file
          */
         readRaw(path: string): Promise<string>;
+
         /**
          * @internal Reload all config files
          */
         reloadConfig(): void;
+
         /**
          * @internal Remove file as child/parent from respective folders
          * @param file File to remove
          */
         removeChild(file: TAbstractFile): void;
+
         /**
          * @internal Get the file by absolute path
          * @param path Path to file
          */
         resolveFilePath(path: string): TAbstractFile | null;
+
         /**
          * @internal Get the file by Obsidian URL
          */
         resolveFileUrl(url: string): TAbstractFile | null;
+
         /**
          * @internal Debounced function for saving config
          */
         requestSaveConfig(): void;
+
         /**
          * @internal Save app and appearance configs to disk
          */
         saveConfig(): Promise<void>;
+
         /**
          * Set value of config by key
          * @param key Key of config value
          * @param value Value to set
          */
         setConfig(key: ConfigItem, value: unknown): void;
+
         /**
          * Set where the config files are stored (relative to vault root)
          * @param configDir Path to config files
          */
         setConfigDir(configDir: string): void;
+
         /**
          * @internal Set file cache limit
          */
         setFileCacheLimit(limit: number): void;
+
         /**
          * @internal Load all config files into memory
          */
         setupConfig(): Promise<void>;
+
         /**
          * @internal Trigger an event on handler
          */
+
         // trigger(type: string): void;
         /**
          * Write a config file to disk
@@ -3537,6 +4104,7 @@ declare module 'obsidian' {
          * @param data Data to write
          */
         writeConfigJson(config: string, data: object): Promise<void>;
+
         /**
          * Write a config file (full path) to disk
          * @param path Full path to config file
@@ -3544,6 +4112,7 @@ declare module 'obsidian' {
          * @param pretty Whether to insert tabs or spaces
          */
         writeJson(path: string, data: object, pretty?: boolean): Promise<void>;
+
         /**
          * Write a plugin config file (path relative to vault root) to disk
          */
@@ -3654,12 +4223,12 @@ declare module 'obsidian' {
          * @remark Prefer usage of onLayoutReady instead
          */
         on(name: 'layout-ready', callback: () => void, ctx?: unknown): EventRef;
-        
+
         /**
          * @internal Triggers when user right-clicks on external URL in editor
          */
         on(name: 'url-menu', callback: (menu: Menu, url: string) => void, ctx?: unknown): EventRef;
-        
+
         /**
          * Triggers when user clicks on 'N results' button in search view
          */
@@ -3669,7 +4238,7 @@ declare module 'obsidian' {
          * @internal Called when user shares text on mobile
          */
         on(name: 'receive-text-menu', callback: (menu: Menu, x: unknown) => void, ctx?: unknown): EventRef;
-        
+
         /**
          * @internal Called when user shares files on mobile
          */
@@ -3699,25 +4268,30 @@ declare module 'obsidian' {
          * @internal Change active leaf and trigger leaf change event
          */
         activeLeafEvents(): void;
+
         /**
          * @internal Add file to mobile file info
          */
         addMobileFileInfo(file: unknown): void;
+
         /**
          * @internal Clear layout of workspace and destruct all leaves
          */
         clearLayout(): Promise<void>;
+
         /**
          * @internal Create a leaf in the selected tab group or last used tab group
          * @param tabs Tab group to create leaf in
          */
         createLeafInTabGroup(tabs?: WorkspaceTabs): WorkspaceLeaf;
+
         /**
          * @internal Deserialize workspace entries into actual Leaf objects
          * @param leaf Leaf entry to deserialize
          * @param ribbon Whether the leaf belongs to the left or right ribbon
          */
         deserializeLayout(leaf: LeafEntry, ribbon?: 'left' | 'right'): Promise<WorkspaceLeaf>;
+
         /**
          * @internal Reveal leaf in side ribbon with specified view type and state
          * @param type View type of leaf
@@ -3725,178 +4299,226 @@ declare module 'obsidian' {
          * @param viewstate Open state of leaf
          */
         ensureSideLeaf(type: string, ribbon: 'left' | 'right', viewstate: OpenViewState): void;
+
         /**
          * Get active file view if exists
          */
         getActiveFileView(): FileView | null;
+
         /**
          * @deprecated Use `getActiveViewOfType` instead
          */
         getActiveLeafOfViewType<T extends View>(type: Constructor<T>): T | null;
+
         /**
          * Get adjacent leaf in specified direction
          * @remark Potentially does not work
          */
         getAdjacentLeafInDirection(leaf: WorkspaceLeaf, direction: 'top' | 'bottom' | 'left' | 'right'): WorkspaceLeaf | null;
+
         /**
          * @internal Get the direction where the leaf should be dropped on dragevent
          */
         getDropDirection(e: DragEvent, rect: DOMRect, directions: ['left', 'right'], leaf: WorkspaceLeaf): 'left' | 'right' | 'top' | 'bottom' | 'center';
+
         /**
          * @internal Get the leaf where the leaf should be dropped on dragevent
          * @param e Drag event
          */
         getDropLocation(e: DragEvent): WorkspaceLeaf | null;
+
         /**
          * Get the workspace split for the currently focused container
          */
         getFocusedContainer(): WorkspaceSplit;
 
         getLeavesOfType(viewType: 'file-explorer'): FileExplorerLeaf[];
+
         /**
          * Get n last opened files of type (defaults to 10)
          */
-        getRecentFiles(arg?: { showMarkdown: boolean, showCanvas: boolean, showNonImageAttachments: boolean, showImages: boolean, maxCount: number }): string[];
+        getRecentFiles(arg?: {
+            showMarkdown: boolean,
+            showCanvas: boolean,
+            showNonImageAttachments: boolean,
+            showImages: boolean,
+            maxCount: number
+        }): string[];
+
         /**
          * Get leaf in the side ribbon/dock and split if necessary
          * @param sideRibbon Side ribbon to get leaf from
          * @param split Whether to split the leaf if it does not exist
          */
         getSideLeaf(sideRibbon: WorkspaceSidedock | WorkspaceMobileDrawer, split: boolean): WorkspaceLeaf;
+
         /**
          * @internal
          */
         handleExternalLinkContextMenu(menu: Menu, linkText: string): void;
+
         /**
          * @internal
          */
         handleLinkContextMenu(menu: Menu, linkText: string, sourcePath: string): void;
+
         /**
          * @internal Check if leaf has been attached to the workspace
          */
         isAttached(leaf?: WorkspaceLeaf): boolean;
+
         /**
          * Iterate the leaves of a split
          */
         iterateLeaves(split: WorkspaceSplit, callback: (leaf: WorkspaceLeaf) => unknown): void;
+
         /**
          * Iterate the tabs of a split till meeting a condition
          */
         iterateTabs(tabs: WorkspaceSplit | WorkspaceSplit[], cb: (leaf: WorkspaceLeaf) => boolean): boolean;
+
         /**
          * @internal Load workspace from disk and initialize
          */
         loadLayout(): Promise<void>;
+
         /**
          * @internal Handles drag event on leaf
          */
         onDragLeaf(e: DragEvent, leaf: WorkspaceLeaf): void;
+
         /**
          * @internal Handles layout change and saves layout to disk
          */
         onLayoutChange(leaf?: WorkspaceLeaf): void;
+
         /**
          * @internal
          */
         onLinkContextMenu(args: unknown[]): void;
+
         /**
          * @internal
          */
         onQuickPreview(args: unknown[]): void;
+
         /**
          * @internal
          */
         onResize(): void;
+
         /**
          * @internal
          */
         onStartLink(leaf: WorkspaceLeaf): void;
+
         /**
          * Open a leaf in a popup window
          * @remark Prefer usage of `app.workspace.openPopoutLeaf`
          */
         openPopout(data?: WorkspaceWindowInitData): WorkspaceWindow;
+
         /**
          * @internal Push leaf change to history
          */
         pushUndoHistory(leaf: WorkspaceLeaf, parentID: string, rootID: string): void;
+
         /**
          * @internal Get drag event target location
          */
         recursiveGetTarget(e: DragEvent, leaf: WorkspaceLeaf): WorkspaceTabs | null;
+
         /**
          * @internal Register a CodeMirror editor extension
          * @remark Prefer registering the extension via the Plugin class
          */
         registerEditorExtension(extension: Extension): void;
+
         /**
          * @internal Registers hover link source
          */
         registerHoverLinkSource(key: string, source: HoverLinkSource): void;
+
         /**
          * @internal Registers Obsidian protocol handler
          */
         registerObsidianProtocolHandler(protocol: string, handler: ObsidianProtocolHandler): void;
+
         /**
          * @internal Constructs hook for receiving URI actions
          */
         registerUriHook(): void;
+
         /**
          * @internal Request execution of activeLeaf change events
          */
         requestActiveLeafEvents(): void;
+
         /**
          * @internal Request execution of resize event
          */
         requestResize(): void;
+
         /**
          * @internal Request execution of layout update event
          */
         requestUpdateLayout(): void;
+
         /**
          * Save workspace layout to disk
          */
         saveLayout(): Promise<void>;
+
         /**
          * @internal Use deserialized layout data to reconstruct the workspace
          */
         setLayout(data: SerializedWorkspace): Promise<void>;
+
         /**
          * @internal Split leaves in specified direction
          */
         splitLeaf(leaf: WorkspaceLeaf, newleaf: WorkspaceLeaf, direction?: SplitDirection, before?: boolean): void;
+
         /**
          * Split provided leaf, or active leaf if none provided
          */
         splitLeafOrActive(leaf?: WorkspaceLeaf, direction?: SplitDirection): void;
+
         /**
          * @internal
          */
+
         // trigger(e: unknown): void;
         /**
          * @internal Unregister a CodeMirror editor extension
          */
         unregisterEditorExtension(extension: Extension): void;
+
         /**
          * @internal Unregister hover link source
          */
         unregisterHoverLinkSource(key: string): void;
+
         /**
          * @internal Unregister Obsidian protocol handler
          */
         unregisterObsidianProtocolHandler(protocol: string): void;
+
         /**
          * @internal
          */
         updateFrameless(): void;
+
         /**
          * @internal Invoke workspace layout update, redraw and save
          */
         updateLayout(): void;
+
         /**
          * @internal Update visibility of tab group
          */
         updateMobileVisibleTabGroup(): void;
+
         /**
          * Update the internal title of the application
          * @remark This title is shown as the application title in the OS taskbar
@@ -3927,8 +4549,8 @@ declare module 'obsidian' {
 
         /**
          * Set the vertical height a leaf may occupy if it is in a split. The height is not set directly, but
-         * by setting the flex-grow (css) of the element. This means to predictably affect the height, you also 
-         * need to use setDimension on the other leafs of the column. (The flex-grow values of every leaf work 
+         * by setting the flex-grow (css) of the element. This means to predictably affect the height, you also
+         * need to use setDimension on the other leafs of the column. (The flex-grow values of every leaf work
          basically like a ratio, e.g. 1:2 meaning the first leaf takes 33% of the height, and the second 67%.)
          * @param flexgrow - sets the flex-grow of the leaf. (0-100)
          */
