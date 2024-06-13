@@ -2,6 +2,11 @@
     "name": "obsidian-typings",
     "version": "1.1.6",
     "description": "Extended type definitions for the Obsidian API (https://obsidian.md)",
+    "exports": {
+        ".": "./lib/types.d.ts",
+        "./implementations": "./lib/implementations.ts"
+    },
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Fevol/obsidian-typings.git"
@@ -20,19 +25,19 @@
     "homepage": "https://github.com/Fevol/obsidian-typings#readme",
     "peerDependencies": {
         "@types/node": "^20.10.7",
-        "@types/electron": "npm:@ophidian/electron-types",
+        "electron": "^30.0.9",
         "obsidian": "^1.5.7-1"
     },
     "devDependencies": {
+        "@tsconfig/strictest": "^2.0.5",
         "dprint": "^0.45.1",
         "ts-morph": "^22.0.0"
     },
     "scripts": {
         "build": "tsc --build --force",
-        "format": "bun run scripts/sort-interfaces.ts obsidian-ex.d.ts && bun dprint fmt obsidian-ex.d.ts",
+        "format": "bun run scripts/sort-interfaces.ts ./lib/ && bun dprint fmt",
         "release-patch": "bun run scripts/bump-version.ts patch",
         "release-minor": "bun run scripts/bump-version.ts minor",
         "release-major": "bun run scripts/bump-version.ts major"
-    },
-    "exports": "./index.ts"
+    }
 }
