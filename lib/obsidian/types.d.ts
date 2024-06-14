@@ -177,6 +177,7 @@ export type { FoldManager } from "./internals/FoldManager.js";
 export type { FootnoteCache } from "./internals/FootnoteCache.js";
 export type { GlobalSearchLeaf } from "./internals/GlobalSearchLeaf.js";
 export type { HotkeyManager } from "./internals/HotkeyManager.js";
+export type { HotkeysSettingTab } from "./internals/HotkeysSettingTab.js";
 export type { HoverLinkEvent } from "./internals/HoverLinkEvent.js";
 export type { IFramedMarkdownEditor } from "./internals/IFramedMarkdownEditor.js";
 export type { ImportedAttachments } from "./internals/ImportedAttachments.js";
