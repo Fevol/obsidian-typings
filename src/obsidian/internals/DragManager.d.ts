@@ -1,4 +1,9 @@
-import type { App, TAbstractFile, TFile, TFolder } from "obsidian";
+import type {
+    App,
+    TAbstractFile,
+    TFile,
+    TFolder
+} from "obsidian";
 
 /** @todo Documentation incomplete */
 export interface DragManager {
