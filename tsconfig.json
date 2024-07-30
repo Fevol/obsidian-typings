@@ -21,7 +21,7 @@
             ]
         },
         "target": "ESNext",
-        "skipLibCheck": false,
+        "skipLibCheck": true,
         "verbatimModuleSyntax": true
     },
     "include": [
