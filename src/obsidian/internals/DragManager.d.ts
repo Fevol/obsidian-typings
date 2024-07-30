@@ -36,7 +36,7 @@ export interface DragManager {
     updateSource(sourceEls: HTMLElement[] | null, sourceClass: string): void;
 }
 
-interface Draggable {
+export interface Draggable {
     source?: unknown;
     type: string;
     icon: string;
@@ -47,12 +47,12 @@ interface Draggable {
     sourcePath?: string;
 }
 
-interface DragStartEvent {
+export interface DragStartEvent {
     evt: DragEvent;
     moved: boolean;
 }
 
-interface DropResult {
+export interface DropResult {
     action: string | null;
     dropEffect: "none" | "copy" | "link" | "move";
     hoverEl: HTMLElement | null;
