@@ -2,7 +2,7 @@ import type { ItemView } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class GraphView extends ItemView {
+export interface GraphView extends ItemView {
     dataEngine: unknown;
     /**
      * Get the current view type
@@ -16,6 +16,4 @@ export class GraphView extends ItemView {
      * Updates the options from the plugin when changed in view
      */
     onOptionsChange(): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

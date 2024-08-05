@@ -5,7 +5,7 @@ import type {
 
 /** @todo Documentation incomplete */
 /** @public */
-export class PdfView extends EditableFileView {
+export interface PdfView extends EditableFileView {
     viewer: unknown;
 
     /**

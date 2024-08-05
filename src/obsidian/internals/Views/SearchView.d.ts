@@ -2,7 +2,7 @@ import type { View } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class SearchView extends View {
+export interface SearchView extends View {
     /** @todo Documentation incomplete */
     onCopyResultsClick(event: MouseEvent): void;
     /** @todo Documentation incomplete */
@@ -64,6 +64,4 @@ export class SearchView extends View {
      * Called when the tap header is clicked. Brings this tab to the front
      */
     onTabHeaderClick(): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

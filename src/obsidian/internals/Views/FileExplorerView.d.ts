@@ -12,7 +12,7 @@ import type { FileExplorerViewFileItemsRecord } from "./FileExplorerViewFileItem
 
 /** @todo Documentation incomplete */
 /** @public */
-export class FileExplorerView extends View {
+export interface FileExplorerView extends View {
     /**
      * Mapping of file path to tree item
      */
@@ -171,6 +171,4 @@ export class FileExplorerView extends View {
      * Event: 'extensions-updated'
      */
     onExtensionsUpdated(): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

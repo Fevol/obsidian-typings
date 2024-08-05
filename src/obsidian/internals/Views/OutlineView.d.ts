@@ -7,7 +7,7 @@ import type { InfoFileView } from "./InfoFileView.js";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class OutlineView extends InfoFileView {
+export interface OutlineView extends InfoFileView {
     /**
      * Finds the active leaf
      */

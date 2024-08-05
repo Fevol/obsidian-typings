@@ -5,7 +5,7 @@ import type {
 
 /** @todo Documentation incomplete */
 /** @public */
-export class BookmarksView extends ItemView {
+export interface BookmarksView extends ItemView {
     /**
      * Called when a file is created.
      * @param file - The created file
@@ -60,6 +60,4 @@ export class BookmarksView extends ItemView {
     _copyToClipboard(e: unknown, t: unknown): void;
     /** @todo Documentation incomplete */
     _getActiveBookmarks(): unknown[];
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

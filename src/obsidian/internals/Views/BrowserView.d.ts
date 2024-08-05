@@ -2,7 +2,7 @@ import type { ItemView } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class BrowserView extends ItemView {
+export interface BrowserView extends ItemView {
     /**
      * Get the current view type
      */
@@ -101,6 +101,4 @@ export class BrowserView extends ItemView {
     onTagClick(e: unknown, t: unknown, n: unknown): void;
     /** @todo Documentation incomplete */
     onExternalLinkRightClick(e: unknown, t: unknown, n: unknown): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

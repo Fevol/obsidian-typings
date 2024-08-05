@@ -2,7 +2,7 @@ import type { ItemView } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class ReleaseNotesView extends ItemView {
+export interface ReleaseNotesView extends ItemView {
     /**
      * Get the current view type
      */
@@ -18,6 +18,4 @@ export class ReleaseNotesView extends ItemView {
      * Renders the release notes
      */
     render(): Promise<unknown>;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

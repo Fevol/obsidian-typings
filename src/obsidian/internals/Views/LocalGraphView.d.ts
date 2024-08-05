@@ -3,7 +3,7 @@ import type { InfoFileView } from "./InfoFileView.js";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class LocalGraphView extends InfoFileView {
+export interface LocalGraphView extends InfoFileView {
     /**
      * Get the current view type
      */

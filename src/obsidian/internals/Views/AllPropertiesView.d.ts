@@ -2,8 +2,8 @@ import type { ItemView } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class AllPropertiesView extends ItemView {
-	/** @todo Documentation incomplete */
+export interface AllPropertiesView extends ItemView {
+    /** @todo Documentation incomplete */
     startRename(e: unknown): Promise<unknown>;
     /**
      * Called when 'Enter' is pressed while rename. Accepts the rename
@@ -54,6 +54,4 @@ export class AllPropertiesView extends ItemView {
     setSortOrder(order: unknown): void;
     /** @todo Documentation incomplete */
     update(): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

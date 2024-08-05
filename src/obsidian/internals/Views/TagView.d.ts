@@ -2,7 +2,7 @@ import type { View } from "obsidian";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class TagView extends View {
+export interface TagView extends View {
     /** @todo Documentation incomplete */
     getNodeId(e: unknown): unknown;
     /** @todo Documentation incomplete */
@@ -21,6 +21,4 @@ export class TagView extends View {
      * Reloads all tags from vault, update all items and sort those
      */
     updateTags(): void;
-	/** @todo Documentation incomplete */
-	getDisplayText(): string;
 }

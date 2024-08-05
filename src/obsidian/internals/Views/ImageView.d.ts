@@ -1,7 +1,7 @@
 import type { EditableFileView } from "obsidian";
 
 /** @public */
-export class ImageView extends EditableFileView {
+export interface ImageView extends EditableFileView {
     /**
      * Get the current view type
      */

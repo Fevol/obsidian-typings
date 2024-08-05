@@ -2,7 +2,7 @@ import type { InfoFileView } from "./InfoFileView.js";
 
 /** @todo Documentation incomplete */
 /** @public */
-export class OutgoingLinkView extends InfoFileView {
+export interface OutgoingLinkView extends InfoFileView {
     /**
      * Get the current view type
      */
