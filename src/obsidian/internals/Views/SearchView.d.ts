@@ -32,7 +32,7 @@ export interface SearchView extends View {
     /**
      * Get the current view type
      */
-    getViewType(): "search";
+    getViewType(): string | "search";
     /** @todo Documentation incomplete */
     onKeyArrowRightInFocus(event: KeyboardEvent): void;
     /** @todo Documentation incomplete */

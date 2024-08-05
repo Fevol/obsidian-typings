@@ -31,7 +31,7 @@ export interface FilePropertiesView extends InfoFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "file-properties";
+    getViewType(): string | "file-properties";
     /** @todo Documentation incomplete */
     updateFrontmatter(file: TFile, t: unknown): unknown;
     /** @todo Documentation incomplete */

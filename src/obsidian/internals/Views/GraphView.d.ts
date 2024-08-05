@@ -7,7 +7,7 @@ export interface GraphView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "graph";
+    getViewType(): string | "graph";
     /**
      * Renders the graph
      */

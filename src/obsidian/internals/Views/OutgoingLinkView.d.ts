@@ -6,7 +6,7 @@ export interface OutgoingLinkView extends InfoFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "outgoing-link";
+    getViewType(): string | "outgoing-link";
     /** @todo Documentation incomplete */
     update(): void;
 }

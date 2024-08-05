@@ -7,7 +7,7 @@ export interface LocalGraphView extends InfoFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "localgraph";
+    getViewType(): string | "localgraph";
     /**
      * Requests a update if the changed file is the opened file
      * @param file - The changed file

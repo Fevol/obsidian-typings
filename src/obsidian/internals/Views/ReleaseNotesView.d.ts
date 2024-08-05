@@ -6,7 +6,7 @@ export interface ReleaseNotesView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "release-notes";
+    getViewType(): string | "release-notes";
     /**
      * Get the release notes from GitHub
      * @param version - The version of the release notes

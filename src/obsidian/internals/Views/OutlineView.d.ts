@@ -17,7 +17,7 @@ export interface OutlineView extends InfoFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "outline";
+    getViewType(): string | "outline";
     /** @todo Documentation incomplete */
     findActiveHeading(e: unknown): unknown | undefined;
     /** @todo Documentation incomplete */

@@ -6,7 +6,7 @@ export interface BrowserView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "browser";
+    getViewType(): string | "browser";
     /**
      * Toggles the reader mode
      */

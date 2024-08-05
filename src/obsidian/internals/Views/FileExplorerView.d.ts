@@ -45,7 +45,7 @@ export interface FileExplorerView extends View {
     /**
      * Get the current view type
      */
-    getViewType(): "file-explorer";
+    getViewType(): string | "file-explorer";
     /**
      * Is called when a new file is created in vault. Updates the file tree
      * @param file - The new file
