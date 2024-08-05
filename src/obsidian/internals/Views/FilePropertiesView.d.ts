@@ -3,7 +3,7 @@ import type { InfoFileView } from "./InfoFileView.js";
 
 /** @todo Documentation incomplete */
 /** @public */
-export interface FilePropertiesView extends InfoFileView {
+export class FilePropertiesView extends InfoFileView {
     /**
      * Returns the file
      */

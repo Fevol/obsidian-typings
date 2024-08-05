@@ -5,4 +5,4 @@ import type { EmptyView } from "./EmptyView.js";
  * @todo This is probably not the right term
  */
 /** @public */
-export interface UnknownView extends EmptyView {}
+export class UnknownView extends EmptyView {}

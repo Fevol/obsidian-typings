@@ -1,9 +1,11 @@
 import type { ItemView } from "obsidian";
 
 /** @public */
-export interface EmptyView extends ItemView {
+export class EmptyView extends ItemView {
     /**
      * Get the current view type
      */
     getViewType(): string | "empty";
+	/** @todo Documentation incomplete */
+	getDisplayText(): string;
 }
