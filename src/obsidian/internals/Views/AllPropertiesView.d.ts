@@ -46,7 +46,7 @@ export interface AllPropertiesView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "all-properties";
+    getViewType(): string | "all-properties";
     /**
      * Updates the sort order and sort by it
      * @param order - The sort order

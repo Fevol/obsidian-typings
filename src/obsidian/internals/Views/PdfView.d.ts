@@ -11,7 +11,7 @@ export interface PdfView extends EditableFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "pdf";
+    getViewType(): string | "pdf";
     /**
      * Is called when the vault has a "modify" event. Reloads the file if the modified file is the file in this view.
      * @param file - The modified file

@@ -21,7 +21,7 @@ export interface BookmarksView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "bookmarks";
+    getViewType(): string | "bookmarks";
     /** @todo Documentation incomplete */
     isItem(item: unknown): boolean;
     /**

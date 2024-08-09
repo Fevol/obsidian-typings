@@ -5,5 +5,5 @@ export interface AudioView extends EditableFileView {
     /**
      * Get the current view type
      */
-    getViewType(): "audio";
+    getViewType(): string | "audio";
 }

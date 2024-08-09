@@ -5,5 +5,5 @@ export interface EmptyView extends ItemView {
     /**
      * Get the current view type
      */
-    getViewType(): "empty";
+    getViewType(): string | "empty";
 }
