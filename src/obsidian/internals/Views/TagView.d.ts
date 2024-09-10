@@ -12,7 +12,7 @@ export interface TagView extends View {
     /**
      * Get the current view type
      */
-    getViewType(): "tag";
+    getViewType(): string | "tag";
     /** @todo Documentation incomplete */
     setIsAllCollapsed(e: unknown): void;
     /** @todo Documentation incomplete */

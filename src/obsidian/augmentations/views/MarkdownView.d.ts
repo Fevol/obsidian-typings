@@ -107,7 +107,7 @@ declare module "obsidian" {
         /**
          * Get the current view type
          */
-        getViewType(): "markdown";
+        getViewType(): string | "markdown";
         /**
          * Validate correctness of frontmatter and update metadata editor
          */
