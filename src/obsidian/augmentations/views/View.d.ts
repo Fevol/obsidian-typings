@@ -14,6 +14,7 @@ declare module 'obsidian' {
          */
         icon: IconName;
         leaf: WorkspaceLeaf;
+        file: TFile,
 
         /**
          * Closes the view
