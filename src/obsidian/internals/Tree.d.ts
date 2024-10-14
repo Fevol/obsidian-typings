@@ -35,7 +35,7 @@ export interface Tree<T> {
     /**
      * Handle renaming of focused item
      */
-    handleRenameFocusedItem: () => void;
+    handleRenameFocusedItem: (event: KeyboardEvent) => void;
     /**
      * ID of the view the tree is associated with
      */
