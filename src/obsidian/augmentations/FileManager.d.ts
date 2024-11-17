@@ -59,6 +59,14 @@ declare module 'obsidian' {
          * @param path - Path to where the file should be created
          */
         createNewMarkdownFileFromLinktext(filename: string, path: string): Promise<TFile>;
+        /**
+         * Generate a Markdown link based on the user's preferences.
+         * @param file - the file to link to.
+         * @param sourcePath - where the link is stored in, used to compute relative links.
+         * @param subpath - A subpath, starting with `#`, used for linking to headings or blocks.
+         * @param alias - The display text if it's to be different than the file name. Pass empty string to use file name.
+         */
+        generateMarkdownLink(file: TFile, sourcePath: string, subpath?: string, alias?: string): string;
         /** @internal */
         getAllLinkResolutions(): unknown[];
         /**
