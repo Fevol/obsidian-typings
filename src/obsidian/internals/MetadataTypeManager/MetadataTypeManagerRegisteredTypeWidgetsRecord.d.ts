@@ -1,15 +1,5 @@
 import type { PropertyWidget } from '../PropertyWidget.d.ts';
 import type { PropertyWidgetType } from '../PropertyWidgetType.d.ts';
-import type { AliasesPropertyWidgetComponent } from './AliasesPropertyWidgetComponent.d.ts';
-import type { CheckboxPropertyWidgetComponent } from './CheckboxPropertyWidgetComponent.d.ts';
-import type { DatePropertyWidgetComponent } from './DatePropertyWidgetComponent.d.ts';
-import type { DatetimePropertyWidgetComponent } from './DatetimePropertyWidgetComponent.d.ts';
-import type { FilePropertyWidgetComponent } from './FilePropertyWidgetComponent.d.ts';
-import type { FolderPropertyWidgetComponent } from './FolderPropertyWidgetComponent.d.ts';
-import type { MultitextPropertyWidgetComponent } from './MultitextPropertyWidgetComponent.d.ts';
-import type { NumberPropertyWidgetComponent } from './NumberPropertyWidgetComponent.d.ts';
-import type { TagsPropertyWidgetComponent } from './TagsPropertyWidgetComponent.d.ts';
-import type { TextPropertyWidgetComponent } from './TextPropertyWidgetComponent.d.ts';
 
 /**
  * @todo Documentation incomplete.
@@ -17,35 +7,37 @@ import type { TextPropertyWidgetComponent } from './TextPropertyWidgetComponent.
  * @unofficial
  */
 export interface MetadataTypeManagerRegisteredTypeWidgetsRecord
-    extends Record<PropertyWidgetType, PropertyWidget<unknown>>
-{
+    extends Record<PropertyWidgetType, PropertyWidget> {
     /** @todo Documentation incomplete. */
-    aliases: PropertyWidget<string | string[], AliasesPropertyWidgetComponent>;
+    aliases: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    checkbox: PropertyWidget<boolean | null, CheckboxPropertyWidgetComponent>;
+    checkbox: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    date: PropertyWidget<moment.MomentInput, DatePropertyWidgetComponent>;
+    date: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    datetime: PropertyWidget<moment.MomentInput, DatetimePropertyWidgetComponent>;
+    datetime: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    file: PropertyWidget<string, FilePropertyWidgetComponent>;
+    file: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    folder: PropertyWidget<string, FolderPropertyWidgetComponent>;
+    folder: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    multitext: PropertyWidget<string[], MultitextPropertyWidgetComponent>;
+    multitext: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    number: PropertyWidget<number, NumberPropertyWidgetComponent>;
+    number: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    tags: PropertyWidget<string[], TagsPropertyWidgetComponent>;
+    property: PropertyWidget;
 
     /** @todo Documentation incomplete. */
-    text: PropertyWidget<null | string, TextPropertyWidgetComponent>;
+    tags: PropertyWidget;
+
+    /** @todo Documentation incomplete. */
+    text: PropertyWidget;
 }
