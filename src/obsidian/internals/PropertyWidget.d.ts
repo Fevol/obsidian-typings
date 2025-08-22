@@ -2,12 +2,25 @@ import type { Component } from 'obsidian';
 import type { PropertyEntryData } from './PropertyEntryData.d.ts';
 import type { PropertyRenderContext } from './PropertyRenderContext.d.ts';
 
+// @todo come up with better names
+interface PropertyWidgetGrandParent {
+    focus(): void;
+}
+interface PropertyWidgetRenderedParent extends PropertyWidgetGrandParent {
+    onFocus(): void;
+    setValue(value: unknown): void;
+}
+export interface PropertyWidgetRendered extends PropertyWidgetRenderedParent {
+    containerEl: HTMLElement;
+    type: string;
+}
+
 /**
  * @todo Documentation incomplete.
  * @public
  * @unofficial
  */
-export interface PropertyWidget<Value = unknown, ComponentType extends Component = Component> {
+export interface PropertyWidget {
     /**
      * Lucide-dev icon associated with the widget.
      */
@@ -31,7 +44,11 @@ export interface PropertyWidget<Value = unknown, ComponentType extends Component
     /**
      * Render function for the widget on field container given context and data.
      */
-    render(containerEl: HTMLElement, data: Value, context: PropertyRenderContext): ComponentType;
+    render(
+        containerEl: HTMLElement,
+        data: unknown,
+        context: PropertyRenderContext
+    ): PropertyWidgetRendered;
 
     /**
      * Validate whether the input value to the widget is correct.
