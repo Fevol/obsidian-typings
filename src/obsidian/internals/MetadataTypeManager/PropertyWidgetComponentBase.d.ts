@@ -18,7 +18,4 @@ export interface PropertyWidgetComponentBase extends Component {
 
     /** @todo Documentation incomplete. */
     onFocus(mode: FocusMode): void;
-
-    /** @todo Documentation incomplete. */
-    setValue(value: unknown): void;
 }
