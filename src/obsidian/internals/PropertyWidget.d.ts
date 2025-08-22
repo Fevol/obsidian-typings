@@ -1,19 +1,7 @@
 import type { Component } from 'obsidian';
 import type { PropertyEntryData } from './PropertyEntryData.d.ts';
 import type { PropertyRenderContext } from './PropertyRenderContext.d.ts';
-
-// @todo come up with better names
-interface PropertyWidgetGrandParent {
-    focus(): void;
-}
-interface PropertyWidgetRenderedParent extends PropertyWidgetGrandParent {
-    onFocus(): void;
-    setValue(value: unknown): void;
-}
-export interface PropertyWidgetRendered extends PropertyWidgetRenderedParent {
-    containerEl: HTMLElement;
-    type: string;
-}
+import type { PropertyWidgetComponentBase } from './MetadataTypeManager/PropertyWidgetComponentBase.js';
 
 /**
  * @todo Documentation incomplete.
@@ -48,7 +36,7 @@ export interface PropertyWidget {
         containerEl: HTMLElement,
         data: unknown,
         context: PropertyRenderContext
-    ): PropertyWidgetRendered;
+    ): PropertyWidgetComponentBase;
 
     /**
      * Validate whether the input value to the widget is correct.
