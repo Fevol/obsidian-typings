@@ -1,6 +1,6 @@
-declare module "types" {
-    import { CodeMirror } from "cm_adapter";
-    import { initVim } from "vim";
+declare module 'types' {
+    import { CodeMirror } from 'cm_adapter';
+    import { initVim } from 'vim';
     export type Vim = ReturnType<typeof initVim>;
     export type vimState = {
         onPasteFn?: () => void;
@@ -45,8 +45,8 @@ declare module "types" {
         mode?: string;
         expectLiteralNext?: boolean;
     };
-    export type Marker = ReturnType<CodeMirror["setBookmark"]>;
-    export type LineHandle = ReturnType<CodeMirror["getLineHandle"]>;
+    export type Marker = ReturnType<CodeMirror['setBookmark']>;
+    export type LineHandle = ReturnType<CodeMirror['getLineHandle']>;
     export type Pos = {
         line: number;
         ch: number;
@@ -62,8 +62,8 @@ declare module "types" {
         anchor: Pos;
         head: Pos;
     }
-    export type RegisterController = ReturnType<Vim["getRegisterController"]>;
-    export type Register = ReturnType<RegisterController["getRegister"]>;
+    export type RegisterController = ReturnType<Vim['getRegisterController']>;
+    export type Register = ReturnType<RegisterController['getRegister']>;
     export type SearchArgs = {
         forward?: boolean;
         toJumplist?: boolean;
@@ -93,15 +93,53 @@ declare module "types" {
             vim: vimState;
         };
     };
-    export type OperatorFn = (cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[], oldAnchor: Pos, newHead?: Pos) => Pos | void;
+    export type OperatorFn = (
+        cm: CodeMirrorV,
+        args: OperatorArgs,
+        ranges: CM5RangeInterface[],
+        oldAnchor: Pos,
+        newHead?: Pos
+    ) => Pos | void;
     export type vimOperators = {
-        change(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[]): void;
-        delete(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[]): void;
-        indent(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[]): void;
-        indentAuto(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[]): void;
-        hardWrap(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[], oldAnchor: Pos): Pos | void;
-        changeCase(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[], oldAnchor: Pos, newHead?: Pos): Pos | void;
-        yank(cm: CodeMirrorV, args: OperatorArgs, ranges: CM5RangeInterface[], oldAnchor: Pos): Pos | void;
+        change(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[]
+        ): void;
+        delete(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[]
+        ): void;
+        indent(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[]
+        ): void;
+        indentAuto(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[]
+        ): void;
+        hardWrap(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[],
+            oldAnchor: Pos
+        ): Pos | void;
+        changeCase(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[],
+            oldAnchor: Pos,
+            newHead?: Pos
+        ): Pos | void;
+        yank(
+            cm: CodeMirrorV,
+            args: OperatorArgs,
+            ranges: CM5RangeInterface[],
+            oldAnchor: Pos
+        ): Pos | void;
     } & {
         [key: string]: OperatorFn;
     };
@@ -129,11 +167,29 @@ declare module "types" {
     export type ActionArgs = ActionArgsPartial & {
         repeat: number;
     };
-    export type ActionFn = (cm: CodeMirrorV, actionArgs: ActionArgs, vim: vimState) => void;
+    export type ActionFn = (
+        cm: CodeMirrorV,
+        actionArgs: ActionArgs,
+        vim: vimState
+    ) => void;
     export type vimActions = {
-        jumpListWalk(cm: CodeMirrorV, actionArgs: ActionArgs, vim: vimState): void;
-        continuePaste(cm: CodeMirrorV, actionArgs: ActionArgs, vim: vimState, text: string, register: Register): void;
-        enterInsertMode(cm: CodeMirrorV, actionArgs: ActionArgsPartial, vum: vimState): void;
+        jumpListWalk(
+            cm: CodeMirrorV,
+            actionArgs: ActionArgs,
+            vim: vimState
+        ): void;
+        continuePaste(
+            cm: CodeMirrorV,
+            actionArgs: ActionArgs,
+            vim: vimState,
+            text: string,
+            register: Register
+        ): void;
+        enterInsertMode(
+            cm: CodeMirrorV,
+            actionArgs: ActionArgsPartial,
+            vum: vimState
+        ): void;
     } & {
         [key: string]: ActionFn;
     };
@@ -157,38 +213,137 @@ declare module "types" {
     export type MotionArgs = MotionArgsPartial & {
         repeat: number;
     };
-    export type MotionFn = (cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState, inputState: InputStateInterface) => Pos | [Pos, Pos] | null | undefined;
+    export type MotionFn = (
+        cm: CodeMirrorV,
+        head: Pos,
+        motionArgs: MotionArgs,
+        vim: vimState,
+        inputState: InputStateInterface
+    ) => Pos | [Pos, Pos] | null | undefined;
     export type vimMotions = {
         moveToTopLine(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
         moveToMiddleLine(cm: CodeMirrorV): Pos;
-        moveToBottomLine(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
+        moveToBottomLine(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
         expandToLine(_cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
-        findNext(_cm: CodeMirrorV, _head: Pos, motionArgs: MotionArgs): Pos | undefined;
-        findAndSelectNextInclusive(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState, inputState: InputStateInterface): Pos | [Pos, Pos] | undefined;
-        goToMark(cm: CodeMirrorV, _head: Pos, motionArgs: MotionArgs, vim: vimState, inputState: InputStateInterface): Pos | undefined | null;
-        moveToOtherHighlightedEnd(cm: CodeMirrorV, _head: Pos, motionArgs: MotionArgs, vim: vimState): [Pos, Pos];
-        jumpToMark(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos;
-        moveByCharacters(_cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
-        moveByLines(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos;
-        moveByDisplayLines(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos;
+        findNext(
+            _cm: CodeMirrorV,
+            _head: Pos,
+            motionArgs: MotionArgs
+        ): Pos | undefined;
+        findAndSelectNextInclusive(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState,
+            inputState: InputStateInterface
+        ): Pos | [Pos, Pos] | undefined;
+        goToMark(
+            cm: CodeMirrorV,
+            _head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState,
+            inputState: InputStateInterface
+        ): Pos | undefined | null;
+        moveToOtherHighlightedEnd(
+            cm: CodeMirrorV,
+            _head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): [Pos, Pos];
+        jumpToMark(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos;
+        moveByCharacters(
+            _cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
+        moveByLines(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos;
+        moveByDisplayLines(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos;
         moveByPage(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
-        moveByParagraph(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
+        moveByParagraph(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
         moveBySentence(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
-        moveByScroll(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos | null;
-        moveByWords(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos | undefined;
-        moveTillCharacter(cm: CodeMirrorV, _head: Pos, motionArgs: MotionArgs): Pos | null;
-        moveToCharacter(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
+        moveByScroll(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos | null;
+        moveByWords(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos | undefined;
+        moveTillCharacter(
+            cm: CodeMirrorV,
+            _head: Pos,
+            motionArgs: MotionArgs
+        ): Pos | null;
+        moveToCharacter(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
         moveToSymbol(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
-        moveToColumn(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos;
-        moveToEol(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos;
+        moveToColumn(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos;
+        moveToEol(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos;
         moveToFirstNonWhiteSpaceCharacter(cm: CodeMirrorV, head: Pos): Pos;
         moveToMatchedSymbol(cm: CodeMirrorV, head: Pos): Pos | undefined;
-        moveToStartOfLine(_cm: CodeMirrorV, head: Pos, motionArgs?: MotionArgs, vim?: vimState): Pos;
-        moveToLineOrEdgeOfDocument(cm: CodeMirrorV, _head: Pos, motionArgs: MotionArgs): Pos;
+        moveToStartOfLine(
+            _cm: CodeMirrorV,
+            head: Pos,
+            motionArgs?: MotionArgs,
+            vim?: vimState
+        ): Pos;
+        moveToLineOrEdgeOfDocument(
+            cm: CodeMirrorV,
+            _head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
         moveToStartOfDisplayLine(cm: CodeMirrorV): Pos;
         moveToEndOfDisplayLine(cm: CodeMirrorV): Pos;
-        textObjectManipulation(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs, vim: vimState): Pos | [Pos, Pos] | null;
-        repeatLastCharacterSearch(cm: CodeMirrorV, head: Pos, motionArgs: MotionArgs): Pos;
+        textObjectManipulation(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs,
+            vim: vimState
+        ): Pos | [Pos, Pos] | null;
+        repeatLastCharacterSearch(
+            cm: CodeMirrorV,
+            head: Pos,
+            motionArgs: MotionArgs
+        ): Pos;
         [key: string]: MotionFn;
     };
     export type exCommandDefinition = {
@@ -203,23 +358,43 @@ declare module "types" {
         user?: boolean;
         noremap?: boolean;
     };
-    export type optionCallback = (value?: string | undefined, cm?: CodeMirror) => any;
-    export type booleanOptionCallback = (value?: boolean, cm?: CodeMirror) => any;
+    export type optionCallback = (
+        value?: string | undefined,
+        cm?: CodeMirror
+    ) => any;
+    export type booleanOptionCallback = (
+        value?: boolean,
+        cm?: CodeMirror
+    ) => any;
     export type numberOptionCallback = (value?: number, cm?: CodeMirror) => any;
     export type stringOptionCallback = (value?: string, cm?: CodeMirror) => any;
-    export type vimOption = {
-        type?: string;
-        defaultValue?: unknown;
-        callback?: optionCallback;
-        value?: unknown;
-    } | {
-        type: 'boolean';
-        defaultValue?: boolean | null | undefined;
-        callback?: booleanOptionCallback;
-        value?: boolean;
-    };
-    export type defineOption1 = ((name: string, defaultValue: unknown, type: string, aliases?: string[] | undefined | null, callback?: optionCallback) => void);
-    export type defineOption2 = ((name: string, defaultValue: boolean | undefined | null, type: 'boolean', aliases?: string[] | undefined | null, callback?: booleanOptionCallback) => void);
+    export type vimOption =
+        | {
+              type?: string;
+              defaultValue?: unknown;
+              callback?: optionCallback;
+              value?: unknown;
+          }
+        | {
+              type: 'boolean';
+              defaultValue?: boolean | null | undefined;
+              callback?: booleanOptionCallback;
+              value?: boolean;
+          };
+    export type defineOption1 = (
+        name: string,
+        defaultValue: unknown,
+        type: string,
+        aliases?: string[] | undefined | null,
+        callback?: optionCallback
+    ) => void;
+    export type defineOption2 = (
+        name: string,
+        defaultValue: boolean | undefined | null,
+        type: 'boolean',
+        aliases?: string[] | undefined | null,
+        callback?: booleanOptionCallback
+    ) => void;
     export type ExFn = (cm: CodeMirrorV, params: ExParams) => void;
     type allCommands = {
         keys: string;
@@ -277,7 +452,16 @@ declare module "types" {
         toKeys: string;
         type: 'keyToKey';
     };
-    export type vimKey = motionCommand | operatorCommand | actionCommand | searchCommand | operatorMotionCommand | idleCommand | exCommand | keyToExCommand | keyToKeyCommand;
+    export type vimKey =
+        | motionCommand
+        | operatorCommand
+        | actionCommand
+        | searchCommand
+        | operatorMotionCommand
+        | idleCommand
+        | exCommand
+        | keyToExCommand
+        | keyToKeyCommand;
     export type vimKeyMap = vimKey[];
     export interface InputStateInterface {
         prefixRepeat: string[];
@@ -295,7 +479,7 @@ declare module "types" {
         operatorShortcut?: string;
         selectedCharacter?: string;
         repeatOverride?: number;
-        changeQueueList?: (InputStateInterface["changeQueue"])[];
+        changeQueueList?: InputStateInterface['changeQueue'][];
         pushRepeatDigit(n: string): void;
         getRepeat(): number;
     }
@@ -310,9 +494,11 @@ declare module "types" {
         };
         getScrollbarAnnotate(): any;
         setScrollbarAnnotate(query: RegExp | null): void;
-        setOverlay(overlay: {
-            query: RegExp;
-        } | null): void;
+        setOverlay(
+            overlay: {
+                query: RegExp;
+            } | null
+        ): void;
     }
     export type exCommandArgs = {
         callback?: (() => void) | undefined;
@@ -340,15 +526,21 @@ declare module "types" {
         substitute(cm: CodeMirrorV, params: vimExCommandsParams): void;
         redo(cm: CodeMirrorV): void;
         undo(cm: CodeMirrorV): void;
-        write(cm: CodeMirrorV & {
-            save?: Function;
-        }): void;
+        write(
+            cm: CodeMirrorV & {
+                save?: Function;
+            }
+        ): void;
         nohlsearch(cm: CodeMirrorV): void;
         yank(cm: CodeMirrorV): void;
         delete(cm: CodeMirrorV, params: vimExCommandsParams): void;
         join(cm: CodeMirrorV, params: vimExCommandsParams): void;
         delmarks(cm: CodeMirrorV, params: vimExCommandsParams): void;
-        [key: string]: (cm: CodeMirrorV, params: vimExCommandsParams, ctx: string) => void;
+        [key: string]: (
+            cm: CodeMirrorV,
+            params: vimExCommandsParams,
+            ctx: string
+        ) => void;
     };
     type vimExCommandsParams = {
         args?: string[];
@@ -364,7 +556,7 @@ declare module "types" {
         selectionLine?: number;
         selectionLineEnd?: number;
     };
-    type InsertModeKey = InstanceType<Vim["InsertModeKey"]>;
+    type InsertModeKey = InstanceType<Vim['InsertModeKey']>;
     export type InsertModeChanges = {
         changes: (InsertModeKey | string | [string, number?])[];
         expectCursorActivityForChange: boolean;
@@ -401,12 +593,12 @@ declare module "types" {
         }
     }
 }
-declare module "cm_adapter" {
-    import { EditorSelection, ChangeDesc } from "@codemirror/state";
-    import { StringStream } from "@codemirror/language";
-    import { EditorView, ViewUpdate } from "@codemirror/view";
-    import { SearchQuery } from "@codemirror/search";
-    import { vimState, CM5RangeInterface } from "types";
+declare module 'cm_adapter' {
+    import { EditorSelection, ChangeDesc } from '@codemirror/state';
+    import { StringStream } from '@codemirror/language';
+    import { EditorView, ViewUpdate } from '@codemirror/view';
+    import { SearchQuery } from '@codemirror/search';
+    import { vimState, CM5RangeInterface } from 'types';
     class Pos {
         line: number;
         ch: number;
@@ -451,8 +643,15 @@ declare module "cm_adapter" {
         static on: typeof on;
         static off: typeof off;
         static signal: typeof signal;
-        openDialog(template: Element, callback: Function | undefined, options: any): (newVal?: string) => void;
-        openNotification(template: Node, options: NotificationOptions): () => void;
+        openDialog(
+            template: Element,
+            callback: Function | undefined,
+            options: any
+        ): (newVal?: string) => void;
+        openNotification(
+            template: Node,
+            options: NotificationOptions
+        ): () => void;
         static findMatchingTag: typeof findMatchingTag;
         static findEnclosingTag: typeof findEnclosingTag;
         cm6: EditorView;
@@ -484,7 +683,7 @@ declare module "cm_adapter" {
         lineCount(): number;
         setCursor(line: number, ch: number): void;
         setCursor(line: Pos): void;
-        getCursor(p?: "head" | "anchor" | "start" | "end"): Pos;
+        getCursor(p?: 'head' | 'anchor' | 'start' | 'end'): Pos;
         listSelections(): {
             anchor: Pos;
             head: Pos;
@@ -512,28 +711,45 @@ declare module "cm_adapter" {
         focus(): void;
         blur(): void;
         defaultTextHeight(): number;
-        findMatchingBracket(pos: Pos, _options?: any): {
-            to: Pos;
-        } | {
-            to: undefined;
-        };
-        scanForBracket(pos: Pos, dir: 1 | -1, style: any, config: any): false | {
-            pos: Pos;
-            ch: string;
-        } | null;
+        findMatchingBracket(
+            pos: Pos,
+            _options?: any
+        ):
+            | {
+                  to: Pos;
+              }
+            | {
+                  to: undefined;
+              };
+        scanForBracket(
+            pos: Pos,
+            dir: 1 | -1,
+            style: any,
+            config: any
+        ):
+            | false
+            | {
+                  pos: Pos;
+                  ch: string;
+              }
+            | null;
         indentLine(line: number, more?: boolean): void;
         indentMore(): void;
         indentLess(): void;
         execCommand(name: string): void;
-        setBookmark(cursor: Pos, options?: {
-            insertLeft: boolean;
-        }): Marker;
+        setBookmark(
+            cursor: Pos,
+            options?: {
+                insertLeft: boolean;
+            }
+        ): Marker;
         cm6Query?: SearchQuery;
-        addOverlay({ query }: {
-            query: RegExp;
-        }): SearchQuery | undefined;
+        addOverlay({ query }: { query: RegExp }): SearchQuery | undefined;
         removeOverlay(overlay?: any): void;
-        getSearchCursor(query: RegExp, pos: Pos): {
+        getSearchCursor(
+            query: RegExp,
+            pos: Pos
+        ): {
             findNext: () => string[] | null | undefined;
             findPrevious: () => string[] | null | undefined;
             find: (back?: boolean) => string[] | null | undefined;
@@ -542,18 +758,29 @@ declare module "cm_adapter" {
             replace: (text: string) => void;
             readonly match: string[] | null;
         };
-        findPosV(start: Pos, amount: number, unit: "page" | "line", goalColumn?: number): Pos & {
+        findPosV(
+            start: Pos,
+            amount: number,
+            unit: 'page' | 'line',
+            goalColumn?: number
+        ): Pos & {
             hitSide?: boolean;
         };
-        charCoords(pos: Pos, mode: "div" | "local"): {
+        charCoords(
+            pos: Pos,
+            mode: 'div' | 'local'
+        ): {
             left: number;
             top: number;
             bottom: number;
         };
-        coordsChar(coords: {
-            left: number;
-            top: number;
-        }, mode: "div" | "local"): Pos;
+        coordsChar(
+            coords: {
+                left: number;
+                top: number;
+            },
+            mode: 'div' | 'local'
+        ): Pos;
         getScrollInfo(): {
             left: number;
             top: number;
@@ -580,10 +807,10 @@ declare module "cm_adapter" {
         onBeforeEndOperation(): void;
         moveH(increment: number, unit: string): void;
         setOption(name: string, val: any): void;
-        getOption(name: "firstLineNumber" | "tabSize" | "textwidth"): number;
+        getOption(name: 'firstLineNumber' | 'tabSize' | 'textwidth'): number;
         getOption(name: string): number | boolean | string | undefined;
         toggleOverwrite(on: boolean): void;
-        getTokenTypeAt(pos: Pos): "" | "string" | "comment";
+        getTokenTypeAt(pos: Pos): '' | 'string' | 'comment';
         overWriteSelection(text: string): void;
         /*** multiselect ****/
         isInMultiSelectMode(): boolean;
@@ -603,16 +830,21 @@ declare module "cm_adapter" {
         duration?: number;
     }
     function findMatchingTag(cm: CodeMirror, pos: Pos): null;
-    function findEnclosingTag(cm: CodeMirror, pos: Pos): {
-        open: {
-            from: Pos;
-            to: Pos;
-        };
-        close: {
-            from: Pos;
-            to: Pos;
-        };
-    } | undefined;
+    function findEnclosingTag(
+        cm: CodeMirror,
+        pos: Pos
+    ):
+        | {
+              open: {
+                  from: Pos;
+                  to: Pos;
+              };
+              close: {
+                  from: Pos;
+                  to: Pos;
+              };
+          }
+        | undefined;
     class Marker {
         cm: CodeMirror;
         id: number;
@@ -630,7 +862,7 @@ declare module "cm_adapter" {
         allowMerge?: boolean;
     };
 }
-declare module "vim" {
+declare module 'vim' {
     /**
      * Supported keybindings:
      *   Too many to list. Refer to defaultKeymap below.
@@ -663,28 +895,30 @@ declare module "vim" {
      *  8. Set up Vim to work as a keymap for CodeMirror.
      *  9. Ex command implementations.
      */
-    /** @arg {typeof import("./cm_adapter").CodeMirror} CM */
-    export function initVim(CM: typeof import("cm_adapter").CodeMirror): {
-        enterVimMode: (cm: import("cm_adapter").CodeMirror) => void;
-        leaveVimMode: (cm: import("cm_adapter").CodeMirror) => void;
+    export function initVim(CM: typeof import('cm_adapter').CodeMirror): {
+        enterVimMode: (cm: import('cm_adapter').CodeMirror) => void;
+        leaveVimMode: (cm: import('cm_adapter').CodeMirror) => void;
         buildKeyMap: () => void;
         getRegisterController: () => {
             registers: {
                 [x: string]: {
                     keyBuffer: string[];
-                    /** @type {InsertModeChanges[]} */
-                    insertModeChanges: import("types").InsertModeChanges[];
-                    /** @type {string[]}*/
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    /** @arg {string} text @arg {boolean} [linewise] */
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    /** @arg {InsertModeChanges} changes */
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                    /** @arg {string} query */
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
@@ -692,56 +926,53 @@ declare module "vim" {
             };
             unnamedRegister: {
                 keyBuffer: string[];
-                /** @type {InsertModeChanges[]} */
-                insertModeChanges: import("types").InsertModeChanges[];
-                /** @type {string[]}*/
+                insertModeChanges: import('types').InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
-                /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                /** @arg {string} text @arg {boolean} [linewise] */
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                /** @arg {InsertModeChanges} changes */
-                pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                /** @arg {string} query */
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
             };
-            /**
-             * @param {string | null | undefined} registerName
-             * @param {string} operator
-             * @param {string} text
-             * @param {boolean} [linewise]
-             * @param {boolean} [blockwise]
-             */
-            pushText(registerName: string | null | undefined, operator: string, text: string, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+            pushText(
+                registerName: string | null | undefined,
+                operator: string,
+                text: string,
+                linewise?: boolean | undefined,
+                blockwise?: boolean | undefined
+            ): void;
             /**
              * Gets the register named @name.  If one of @name doesn't already exist,
              * create it.  If @name is invalid, return the unnamedRegister.
-             * @arg {string} [name]
              */
             getRegister(name?: string | undefined): {
                 keyBuffer: string[];
-                /** @type {InsertModeChanges[]} */
-                insertModeChanges: import("types").InsertModeChanges[];
-                /** @type {string[]}*/
+                insertModeChanges: import('types').InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
-                /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                /** @arg {string} text @arg {boolean} [linewise] */
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                /** @arg {InsertModeChanges} changes */
-                pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                /** @arg {string} query */
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
             };
-            /**@type {{(name: any): name is string}} */
             isValidRegister(name: any): name is string;
             shiftNumericRegisters_(): void;
         };
@@ -751,34 +982,33 @@ declare module "vim" {
                 latestRegister: string | undefined;
                 isPlaying: boolean;
                 isRecording: boolean;
-                /** @type {string[]}*/
                 replaySearchQueries: string[];
                 onRecordingDone: ((newVal?: string) => void) | undefined;
-                lastInsertModeChanges: import("types").InsertModeChanges;
+                lastInsertModeChanges: import('types').InsertModeChanges;
                 exitMacroRecordMode(): void;
-                /**
-                 * @arg {CodeMirror} cm
-                 * @arg {string} registerName
-                 */
-                enterMacroRecordMode(cm: import("cm_adapter").CodeMirror, registerName: string): void;
+                enterMacroRecordMode(
+                    cm: import('cm_adapter').CodeMirror,
+                    registerName: string
+                ): void;
             };
             registerController: {
                 registers: {
                     [x: string]: {
                         keyBuffer: string[];
-                        /** @type {InsertModeChanges[]} */
-                        insertModeChanges: import("types").InsertModeChanges[];
-                        /** @type {string[]}*/
-                        searchQueries: string[];
                         linewise: boolean;
                         blockwise: boolean;
-                        /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                        setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                        /** @arg {string} text @arg {boolean} [linewise] */
-                        pushText(text: string, linewise?: boolean | undefined): void;
-                        /** @arg {InsertModeChanges} changes */
-                        pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                        /** @arg {string} query */
+                        setText(
+                            text?: string | undefined,
+                            linewise?: boolean | undefined,
+                            blockwise?: boolean | undefined
+                        ): void;
+                        pushText(
+                            text: string,
+                            linewise?: boolean | undefined
+                        ): void;
+                        pushInsertModeChanges(
+                            changes: import('types').InsertModeChanges
+                        ): void;
                         pushSearchQuery(query: string): void;
                         clear(): void;
                         toString(): string;
@@ -786,111 +1016,124 @@ declare module "vim" {
                 };
                 unnamedRegister: {
                     keyBuffer: string[];
-                    /** @type {InsertModeChanges[]} */
-                    insertModeChanges: import("types").InsertModeChanges[];
-                    /** @type {string[]}*/
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    /** @arg {string} text @arg {boolean} [linewise] */
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    /** @arg {InsertModeChanges} changes */
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                    /** @arg {string} query */
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
                 };
-                /**
-                 * @param {string | null | undefined} registerName
-                 * @param {string} operator
-                 * @param {string} text
-                 * @param {boolean} [linewise]
-                 * @param {boolean} [blockwise]
-                 */
-                pushText(registerName: string | null | undefined, operator: string, text: string, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+                pushText(
+                    registerName: string | null | undefined,
+                    operator: string,
+                    text: string,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 /**
                  * Gets the register named @name.  If one of @name doesn't already exist,
                  * create it.  If @name is invalid, return the unnamedRegister.
-                 * @arg {string} [name]
                  */
                 getRegister(name?: string | undefined): {
                     keyBuffer: string[];
-                    /** @type {InsertModeChanges[]} */
-                    insertModeChanges: import("types").InsertModeChanges[];
-                    /** @type {string[]}*/
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    /** @arg {string} text @arg {boolean} [linewise] */
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    /** @arg {InsertModeChanges} changes */
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-                    /** @arg {string} query */
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
                 };
-                /**@type {{(name: any): name is string}} */
                 isValidRegister(name: any): name is string;
                 shiftNumericRegisters_(): void;
             };
             searchHistoryController: {
-                /**@type {string[]} */
                 historyBuffer: string[];
                 iterator: number;
                 initialPrefix: string | null;
                 /**
                  * the input argument here acts a user entered prefix for a small time
                  * until we start autocompletion in which case it is the autocompleted.
-                 * @arg {string} input
-                 * @arg {boolean} up
                  */
                 nextMatch(input: string, up: boolean): string | undefined;
-                /** @arg {string} input */
                 pushInput(input: string): void;
                 reset(): void;
             };
-            jumpList: ReturnType<() => {
-                /**@type{Pos|undefined} */
-                cachedCursor: import("types").Pos | undefined;
-                add: (cm: import("cm_adapter").CodeMirror, oldCur: import("types").Pos, newCur: import("types").Pos) => void;
-                find: (cm: import("cm_adapter").CodeMirror, offset: number) => {
-                    line: number;
-                    ch: number;
-                    sticky?: string;
-                } | null | undefined;
-                move: (cm: import("cm_adapter").CodeMirror, offset: number) => {
-                    cm: import("cm_adapter").CodeMirror;
-                    id: number;
-                    offset: number | null;
-                    assoc: number;
-                    clear(): void;
-                    find(): {
-                        line: number;
-                        ch: number;
-                        sticky?: string;
-                    } | null;
-                    update(change: import("@codemirror/state").ChangeDesc): void;
-                } | undefined;
-            }>;
+            jumpList: ReturnType<
+                () => {
+                    cachedCursor: import('types').Pos | undefined;
+                    add: (
+                        cm: import('cm_adapter').CodeMirror,
+                        oldCur: import('types').Pos,
+                        newCur: import('types').Pos
+                    ) => void;
+                    find: (
+                        cm: import('cm_adapter').CodeMirror,
+                        offset: number
+                    ) =>
+                        | {
+                              line: number;
+                              ch: number;
+                              sticky?: string;
+                          }
+                        | null
+                        | undefined;
+                    move: (
+                        cm: import('cm_adapter').CodeMirror,
+                        offset: number
+                    ) =>
+                        | {
+                              cm: import('cm_adapter').CodeMirror;
+                              id: number;
+                              offset: number | null;
+                              assoc: number;
+                              clear(): void;
+                              find(): {
+                                  line: number;
+                                  ch: number;
+                                  sticky?: string;
+                              } | null;
+                              update(
+                                  change: import('@codemirror/state').ChangeDesc
+                              ): void;
+                          }
+                        | undefined;
+                }
+            >;
             exCommandHistoryController: {
-                /**@type {string[]} */
                 historyBuffer: string[];
                 iterator: number;
                 initialPrefix: string | null;
                 /**
                  * the input argument here acts a user entered prefix for a small time
                  * until we start autocompletion in which case it is the autocompleted.
-                 * @arg {string} input
-                 * @arg {boolean} up
                  */
                 nextMatch(input: string, up: boolean): string | undefined;
-                /** @arg {string} input */
                 pushInput(input: string): void;
                 reset(): void;
             };
@@ -905,7 +1148,9 @@ declare module "vim" {
             searchQuery?: null;
             searchIsReversed?: boolean;
         };
-        maybeInitVimState_: (cm: import("cm_adapter").CodeMirror) => import("types").vimState;
+        maybeInitVimState_: (
+            cm: import('cm_adapter').CodeMirror
+        ) => import('types').vimState;
         suppressErrorLogging: boolean;
         InsertModeKey: {
             new (keyName: string, e: KeyboardEvent): {
@@ -917,59 +1162,72 @@ declare module "vim" {
                 shiftKey: boolean;
             };
         };
-        /**@type {(lhs: string, rhs: string, ctx: string) => void} */
         map: (lhs: string, rhs: string, ctx: string) => void;
-        /**@type {(lhs: string, ctx: string) => any} */
         unmap: (lhs: string, ctx: string) => any;
-        /**@type {(lhs: string, rhs: string, ctx: string) => void} */
         noremap: (lhs: string, rhs: string, ctx: string) => void;
-        /**@arg {string} [ctx]} */
         mapclear: (ctx?: string | undefined) => void;
         langmap: (langmapString: any, remapCtrl: any) => void;
-        vimKeyFromEvent: (e: KeyboardEvent, vim?: import("types").vimState | undefined) => string | undefined;
-        setOption: (name: string, value: any, cm?: import("types").CodeMirrorV | undefined, cfg?: {
-            scope?: any;
-        } | undefined) => Error | undefined;
-        getOption: (name: string, cm?: import("types").CodeMirrorV | undefined, cfg?: {
-            scope?: any;
-        } | undefined) => any;
+        vimKeyFromEvent: (
+            e: KeyboardEvent,
+            vim?: import('types').vimState | undefined
+        ) => string | undefined;
+        setOption: (
+            name: string,
+            value: any,
+            cm?: import('types').CodeMirrorV | undefined,
+            cfg?:
+                | {
+                      scope?: any;
+                  }
+                | undefined
+        ) => Error | undefined;
+        getOption: (
+            name: string,
+            cm?: import('types').CodeMirrorV | undefined,
+            cfg?:
+                | {
+                      scope?: any;
+                  }
+                | undefined
+        ) => any;
         defineOption: {
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {boolean|null|undefined} defaultValue
-             * @arg {'boolean'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").booleanOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: boolean | null | undefined, type: "boolean", aliases?: string[] | null | undefined, callback?: import("types").booleanOptionCallback | undefined): void;
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {number|null|undefined} defaultValue
-             * @arg {'number'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").numberOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: number | null | undefined, type: "number", aliases?: string[] | null | undefined, callback?: import("types").numberOptionCallback | undefined): void;
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {string|null|undefined} defaultValue
-             * @arg {'string'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").stringOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: string | null | undefined, type: "string", aliases?: string[] | null | undefined, callback?: import("types").stringOptionCallback | undefined): void;
+            (
+                name: string,
+                defaultValue: boolean | null | undefined,
+                type: 'boolean',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').booleanOptionCallback | undefined
+            ): void;
+            (
+                name: string,
+                defaultValue: number | null | undefined,
+                type: 'number',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').numberOptionCallback | undefined
+            ): void;
+            (
+                name: string,
+                defaultValue: string | null | undefined,
+                type: 'string',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').stringOptionCallback | undefined
+            ): void;
         };
-        /**@type {(name: string, prefix: string|undefined, func: ExFn) => void} */
-        defineEx: (name: string, prefix: string | undefined, func: import("types").ExFn) => void;
-        /**@type {(cm: CodeMirror, key: string, origin: string) => undefined | boolean} */
-        handleKey: (cm: import("cm_adapter").CodeMirror, key: string, origin: string) => undefined | boolean;
-        multiSelectHandleKey: (cm_: import("cm_adapter").CodeMirror, key: string, origin: string) => boolean | undefined;
+        defineEx: (
+            name: string,
+            prefix: string | undefined,
+            func: import('types').ExFn
+        ) => void;
+        handleKey: (
+            cm: import('cm_adapter').CodeMirror,
+            key: string,
+            origin: string
+        ) => undefined | boolean;
+        multiSelectHandleKey: (
+            cm_: import('cm_adapter').CodeMirror,
+            key: string,
+            origin: string
+        ) => boolean | undefined;
         /**
          * This is the outermost function called by CodeMirror, after keys have
          * been mapped to their Vim equivalents.
@@ -980,44 +1238,61 @@ declare module "vim" {
          * execute the bound command if a a key is matched. The function always
          * returns true.
          */
-        /**@type {(cm_: CodeMirror, key: string, origin?: string| undefined) => (() => boolean|undefined) | undefined} */
-        findKey: (cm_: import("cm_adapter").CodeMirror, key: string, origin?: string | undefined) => (() => boolean | undefined) | undefined;
-        /**@type {(cm: CodeMirrorV, input: string)=>void} */
-        handleEx: (cm: import("types").CodeMirrorV, input: string) => void;
-        defineMotion: (name: string, fn: import("types").MotionFn) => void;
-        defineAction: (name: string, fn: import("types").ActionFn) => void;
-        defineOperator: (name: string, fn: import("types").OperatorFn) => void;
-        mapCommand: (keys: string, type: string, name: string, args: any, extra: {
-            [x: string]: any;
-        }) => void;
-        _mapCommand: (command: import("types").vimKey) => void;
-        defineRegister: (name: string, register: {
-            keyBuffer: string[];
-            /** @type {InsertModeChanges[]} */
-            insertModeChanges: import("types").InsertModeChanges[];
-            /** @type {string[]}*/
-            searchQueries: string[];
-            linewise: boolean;
-            blockwise: boolean;
-            /** @arg {string} [text] @arg {boolean} [linewise] @arg {boolean } [blockwise] */
-            setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-            /** @arg {string} text @arg {boolean} [linewise] */
-            pushText(text: string, linewise?: boolean | undefined): void;
-            /** @arg {InsertModeChanges} changes */
-            pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-            /** @arg {string} query */
-            pushSearchQuery(query: string): void;
-            clear(): void;
-            toString(): string;
-        }) => void;
-        exitVisualMode: (cm: import("types").CodeMirrorV, moveHead?: boolean | undefined) => void;
-        exitInsertMode: (cm: import("types").CodeMirrorV, keepCursor?: boolean | undefined) => void;
+        findKey: (
+            cm_: import('cm_adapter').CodeMirror,
+            key: string,
+            origin?: string | undefined
+        ) => (() => boolean | undefined) | undefined;
+        handleEx: (cm: import('types').CodeMirrorV, input: string) => void;
+        defineMotion: (name: string, fn: import('types').MotionFn) => void;
+        defineAction: (name: string, fn: import('types').ActionFn) => void;
+        defineOperator: (name: string, fn: import('types').OperatorFn) => void;
+        mapCommand: (
+            keys: string,
+            type: string,
+            name: string,
+            args: any,
+            extra: {
+                [x: string]: any;
+            }
+        ) => void;
+        _mapCommand: (command: import('types').vimKey) => void;
+        defineRegister: (
+            name: string,
+            register: {
+                keyBuffer: string[];
+                insertModeChanges: import('types').InsertModeChanges[];
+                searchQueries: string[];
+                linewise: boolean;
+                blockwise: boolean;
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
+                pushText(text: string, linewise?: boolean | undefined): void;
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
+                pushSearchQuery(query: string): void;
+                clear(): void;
+                toString(): string;
+            }
+        ) => void;
+        exitVisualMode: (
+            cm: import('types').CodeMirrorV,
+            moveHead?: boolean | undefined
+        ) => void;
+        exitInsertMode: (
+            cm: import('types').CodeMirrorV,
+            keepCursor?: boolean | undefined
+        ) => void;
     };
 }
-declare module "index" {
-    import { CodeMirror } from "cm_adapter";
-    import { Extension } from "@codemirror/state";
-    import { EditorView } from "@codemirror/view";
+declare module 'index' {
+    import { CodeMirror } from 'cm_adapter';
+    import { Extension } from '@codemirror/state';
+    import { EditorView } from '@codemirror/view';
     const Vim: {
         enterVimMode: (cm: CodeMirror) => void;
         leaveVimMode: (cm: CodeMirror) => void;
@@ -1026,13 +1301,22 @@ declare module "index" {
             registers: {
                 [x: string]: {
                     keyBuffer: string[];
-                    insertModeChanges: import("types").InsertModeChanges[];
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
@@ -1040,27 +1324,45 @@ declare module "index" {
             };
             unnamedRegister: {
                 keyBuffer: string[];
-                insertModeChanges: import("types").InsertModeChanges[];
+                insertModeChanges: import('types').InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
-                setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
             };
-            pushText(registerName: string | null | undefined, operator: string, text: string, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+            pushText(
+                registerName: string | null | undefined,
+                operator: string,
+                text: string,
+                linewise?: boolean | undefined,
+                blockwise?: boolean | undefined
+            ): void;
             getRegister(name?: string | undefined): {
                 keyBuffer: string[];
-                insertModeChanges: import("types").InsertModeChanges[];
+                insertModeChanges: import('types').InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
-                setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
@@ -1076,21 +1378,33 @@ declare module "index" {
                 isRecording: boolean;
                 replaySearchQueries: string[];
                 onRecordingDone: ((newVal?: string) => void) | undefined;
-                lastInsertModeChanges: import("types").InsertModeChanges;
+                lastInsertModeChanges: import('types').InsertModeChanges;
                 exitMacroRecordMode(): void;
-                enterMacroRecordMode(cm: CodeMirror, registerName: string): void;
+                enterMacroRecordMode(
+                    cm: CodeMirror,
+                    registerName: string
+                ): void;
             };
             registerController: {
                 registers: {
                     [x: string]: {
                         keyBuffer: string[];
-                        insertModeChanges: import("types").InsertModeChanges[];
+                        insertModeChanges: import('types').InsertModeChanges[];
                         searchQueries: string[];
                         linewise: boolean;
                         blockwise: boolean;
-                        setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                        pushText(text: string, linewise?: boolean | undefined): void;
-                        pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                        setText(
+                            text?: string | undefined,
+                            linewise?: boolean | undefined,
+                            blockwise?: boolean | undefined
+                        ): void;
+                        pushText(
+                            text: string,
+                            linewise?: boolean | undefined
+                        ): void;
+                        pushInsertModeChanges(
+                            changes: import('types').InsertModeChanges
+                        ): void;
                         pushSearchQuery(query: string): void;
                         clear(): void;
                         toString(): string;
@@ -1098,27 +1412,51 @@ declare module "index" {
                 };
                 unnamedRegister: {
                     keyBuffer: string[];
-                    insertModeChanges: import("types").InsertModeChanges[];
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
                 };
-                pushText(registerName: string | null | undefined, operator: string, text: string, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
+                pushText(
+                    registerName: string | null | undefined,
+                    operator: string,
+                    text: string,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
                 getRegister(name?: string | undefined): {
                     keyBuffer: string[];
-                    insertModeChanges: import("types").InsertModeChanges[];
+                    insertModeChanges: import('types').InsertModeChanges[];
                     searchQueries: string[];
                     linewise: boolean;
                     blockwise: boolean;
-                    setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-                    pushText(text: string, linewise?: boolean | undefined): void;
-                    pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
+                    setText(
+                        text?: string | undefined,
+                        linewise?: boolean | undefined,
+                        blockwise?: boolean | undefined
+                    ): void;
+                    pushText(
+                        text: string,
+                        linewise?: boolean | undefined
+                    ): void;
+                    pushInsertModeChanges(
+                        changes: import('types').InsertModeChanges
+                    ): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
@@ -1134,28 +1472,47 @@ declare module "index" {
                 pushInput(input: string): void;
                 reset(): void;
             };
-            jumpList: ReturnType<() => {
-                cachedCursor: import("types").Pos | undefined;
-                add: (cm: CodeMirror, oldCur: import("types").Pos, newCur: import("types").Pos) => void;
-                find: (cm: CodeMirror, offset: number) => {
-                    line: number;
-                    ch: number;
-                    sticky?: string;
-                } | null | undefined;
-                move: (cm: CodeMirror, offset: number) => {
-                    cm: CodeMirror;
-                    id: number;
-                    offset: number | null;
-                    assoc: number;
-                    clear(): void;
-                    find(): {
-                        line: number;
-                        ch: number;
-                        sticky?: string;
-                    } | null;
-                    update(change: import("@codemirror/state").ChangeDesc): void;
-                } | undefined;
-            }>;
+            jumpList: ReturnType<
+                () => {
+                    cachedCursor: import('types').Pos | undefined;
+                    add: (
+                        cm: CodeMirror,
+                        oldCur: import('types').Pos,
+                        newCur: import('types').Pos
+                    ) => void;
+                    find: (
+                        cm: CodeMirror,
+                        offset: number
+                    ) =>
+                        | {
+                              line: number;
+                              ch: number;
+                              sticky?: string;
+                          }
+                        | null
+                        | undefined;
+                    move: (
+                        cm: CodeMirror,
+                        offset: number
+                    ) =>
+                        | {
+                              cm: CodeMirror;
+                              id: number;
+                              offset: number | null;
+                              assoc: number;
+                              clear(): void;
+                              find(): {
+                                  line: number;
+                                  ch: number;
+                                  sticky?: string;
+                              } | null;
+                              update(
+                                  change: import('@codemirror/state').ChangeDesc
+                              ): void;
+                          }
+                        | undefined;
+                }
+            >;
             exCommandHistoryController: {
                 historyBuffer: string[];
                 iterator: number;
@@ -1175,7 +1532,7 @@ declare module "index" {
             searchQuery?: null;
             searchIsReversed?: boolean;
         };
-        maybeInitVimState_: (cm: CodeMirror) => import("types").vimState;
+        maybeInitVimState_: (cm: CodeMirror) => import('types').vimState;
         suppressErrorLogging: boolean;
         InsertModeKey: {
             new (keyName: string, e: KeyboardEvent): {
@@ -1192,82 +1549,124 @@ declare module "index" {
         noremap: (lhs: string, rhs: string, ctx: string) => void;
         mapclear: (ctx?: string | undefined) => void;
         langmap: (langmapString: any, remapCtrl: any) => void;
-        vimKeyFromEvent: (e: KeyboardEvent, vim?: import("types").vimState | undefined) => string | undefined;
-        setOption: (name: string, value: any, cm?: import("types").CodeMirrorV | undefined, cfg?: {
-            scope?: any;
-        } | undefined) => Error | undefined;
-        getOption: (name: string, cm?: import("types").CodeMirrorV | undefined, cfg?: {
-            scope?: any;
-        } | undefined) => any;
+        vimKeyFromEvent: (
+            e: KeyboardEvent,
+            vim?: import('types').vimState | undefined
+        ) => string | undefined;
+        setOption: (
+            name: string,
+            value: any,
+            cm?: import('types').CodeMirrorV | undefined,
+            cfg?:
+                | {
+                      scope?: any;
+                  }
+                | undefined
+        ) => Error | undefined;
+        getOption: (
+            name: string,
+            cm?: import('types').CodeMirrorV | undefined,
+            cfg?:
+                | {
+                      scope?: any;
+                  }
+                | undefined
+        ) => any;
         defineOption: {
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {boolean|null|undefined} defaultValue
-             * @arg {'boolean'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").booleanOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: boolean | null | undefined, type: "boolean", aliases?: string[] | null | undefined, callback?: import("types").booleanOptionCallback | undefined): void;
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {number|null|undefined} defaultValue
-             * @arg {'number'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").numberOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: number | null | undefined, type: "number", aliases?: string[] | null | undefined, callback?: import("types").numberOptionCallback | undefined): void;
-            /**
-             * @overload
-             * @arg {string} name
-             * @arg {string|null|undefined} defaultValue
-             * @arg {'string'} type
-             * @arg {string[]|null} [aliases]
-             * @arg {import("./types").stringOptionCallback} [callback]
-             * @returns {void}
-             */
-            (name: string, defaultValue: string | null | undefined, type: "string", aliases?: string[] | null | undefined, callback?: import("types").stringOptionCallback | undefined): void;
+            (
+                name: string,
+                defaultValue: boolean | null | undefined,
+                type: 'boolean',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').booleanOptionCallback | undefined
+            ): void;
+            (
+                name: string,
+                defaultValue: number | null | undefined,
+                type: 'number',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').numberOptionCallback | undefined
+            ): void;
+            (
+                name: string,
+                defaultValue: string | null | undefined,
+                type: 'string',
+                aliases?: string[] | null | undefined,
+                callback?: import('types').stringOptionCallback | undefined
+            ): void;
         };
-        defineEx: (name: string, prefix: string | undefined, func: import("types").ExFn) => void;
-        handleKey: (cm: CodeMirror, key: string, origin: string) => undefined | boolean;
-        multiSelectHandleKey: (cm_: CodeMirror, key: string, origin: string) => boolean | undefined;
-        findKey: (cm_: CodeMirror, key: string, origin?: string | undefined) => (() => boolean | undefined) | undefined;
-        handleEx: (cm: import("types").CodeMirrorV, input: string) => void;
-        defineMotion: (name: string, fn: import("types").MotionFn) => void;
-        defineAction: (name: string, fn: import("types").ActionFn) => void;
-        defineOperator: (name: string, fn: import("types").OperatorFn) => void;
-        mapCommand: (keys: string, type: string, name: string, args: any, extra: {
-            [x: string]: any;
-        }) => void;
-        _mapCommand: (command: import("types").vimKey) => void;
-        defineRegister: (name: string, register: {
-            keyBuffer: string[];
-            insertModeChanges: import("types").InsertModeChanges[];
-            searchQueries: string[];
-            linewise: boolean;
-            blockwise: boolean;
-            setText(text?: string | undefined, linewise?: boolean | undefined, blockwise?: boolean | undefined): void;
-            pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(changes: import("types").InsertModeChanges): void;
-            pushSearchQuery(query: string): void;
-            clear(): void;
-            toString(): string;
-        }) => void;
-        exitVisualMode: (cm: import("types").CodeMirrorV, moveHead?: boolean | undefined) => void;
-        exitInsertMode: (cm: import("types").CodeMirrorV, keepCursor?: boolean | undefined) => void;
+        defineEx: (
+            name: string,
+            prefix: string | undefined,
+            func: import('types').ExFn
+        ) => void;
+        handleKey: (
+            cm: CodeMirror,
+            key: string,
+            origin: string
+        ) => undefined | boolean;
+        multiSelectHandleKey: (
+            cm_: CodeMirror,
+            key: string,
+            origin: string
+        ) => boolean | undefined;
+        findKey: (
+            cm_: CodeMirror,
+            key: string,
+            origin?: string | undefined
+        ) => (() => boolean | undefined) | undefined;
+        handleEx: (cm: import('types').CodeMirrorV, input: string) => void;
+        defineMotion: (name: string, fn: import('types').MotionFn) => void;
+        defineAction: (name: string, fn: import('types').ActionFn) => void;
+        defineOperator: (name: string, fn: import('types').OperatorFn) => void;
+        mapCommand: (
+            keys: string,
+            type: string,
+            name: string,
+            args: any,
+            extra: {
+                [x: string]: any;
+            }
+        ) => void;
+        _mapCommand: (command: import('types').vimKey) => void;
+        defineRegister: (
+            name: string,
+            register: {
+                keyBuffer: string[];
+                insertModeChanges: import('types').InsertModeChanges[];
+                searchQueries: string[];
+                linewise: boolean;
+                blockwise: boolean;
+                setText(
+                    text?: string | undefined,
+                    linewise?: boolean | undefined,
+                    blockwise?: boolean | undefined
+                ): void;
+                pushText(text: string, linewise?: boolean | undefined): void;
+                pushInsertModeChanges(
+                    changes: import('types').InsertModeChanges
+                ): void;
+                pushSearchQuery(query: string): void;
+                clear(): void;
+                toString(): string;
+            }
+        ) => void;
+        exitVisualMode: (
+            cm: import('types').CodeMirrorV,
+            moveHead?: boolean | undefined
+        ) => void;
+        exitInsertMode: (
+            cm: import('types').CodeMirrorV,
+            keepCursor?: boolean | undefined
+        ) => void;
     };
-    export function vim(options?: {
-        status?: boolean;
-    }): Extension;
+    export function vim(options?: { status?: boolean }): Extension;
     export { CodeMirror, Vim };
     export function getCM(view: EditorView): CodeMirror | null;
 }
-declare module "block-cursor" {
-    import { ViewUpdate, EditorView } from "@codemirror/view";
-    import { CodeMirror } from "index";
+declare module 'block-cursor' {
+    import { ViewUpdate, EditorView } from '@codemirror/view';
+    import { CodeMirror } from 'index';
     type Measure = {
         cursors: Piece[];
     };
@@ -1282,7 +1681,18 @@ declare module "block-cursor" {
         readonly className: string;
         readonly letter: string;
         readonly partial: boolean;
-        constructor(left: number, top: number, height: number, fontFamily: string, fontSize: string, fontWeight: string, color: string, className: string, letter: string, partial: boolean);
+        constructor(
+            left: number,
+            top: number,
+            height: number,
+            fontFamily: string,
+            fontSize: string,
+            fontWeight: string,
+            color: string,
+            className: string,
+            letter: string,
+            partial: boolean
+        );
         draw(): HTMLDivElement;
         adjust(elt: HTMLElement): void;
         eq(p: Piece): boolean;
@@ -1305,5 +1715,5 @@ declare module "block-cursor" {
         drawSel({ cursors }: Measure): void;
         destroy(): void;
     }
-    export const hideNativeSelection: import("@codemirror/state").Extension;
+    export const hideNativeSelection: import('@codemirror/state').Extension;
 }
