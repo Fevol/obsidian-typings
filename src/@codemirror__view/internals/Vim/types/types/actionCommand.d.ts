@@ -7,8 +7,12 @@ export type actionCommand = allCommands & {
     type: 'action';
     /** @todo Documentation incomplete. */
     action: string;
+    /** @todo Documentation incomplete. */
     actionArgs?: ActionArgsPartial;
+    /** @todo Documentation incomplete. */
     motion?: string;
+    /** @todo Documentation incomplete. */
     operator?: string;
+    /** @todo Documentation incomplete. */
     interlaceInsertRepeat?: boolean;
 };

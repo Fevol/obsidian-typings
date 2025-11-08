@@ -10,8 +10,11 @@ export type operatorMotionCommand = allCommands & {
     motion: string;
     /** @todo Documentation incomplete. */
     operator: string;
+    /** @todo Documentation incomplete. */
     motionArgs?: MotionArgsPartial;
+    /** @todo Documentation incomplete. */
     operatorArgs?: OperatorArgs;
+    /** @todo Documentation incomplete. */
     operatorMotionArgs?: {
         visualLine?: boolean;
     };

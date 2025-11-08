@@ -90,7 +90,9 @@ type Vim = {
             operator: string,
             /** @todo Documentation incomplete. */
             text: string,
+            /** @todo Documentation incomplete. */
             linewise?: boolean | undefined,
+            /** @todo Documentation incomplete. */
             blockwise?: boolean | undefined
         ): void;
         getRegister(name?: string | undefined): {
@@ -348,11 +350,15 @@ type Vim = {
             /** @todo Documentation incomplete. */
             selectedCharacter: string;
         };
+        /** @todo Documentation incomplete. */
         query?: any;
+        /** @todo Documentation incomplete. */
         isReversed?: boolean;
         /** @todo Documentation incomplete. */
         lastSubstituteReplacePart: any;
+        /** @todo Documentation incomplete. */
         searchQuery?: null;
+        /** @todo Documentation incomplete. */
         searchIsReversed?: boolean;
     };
     maybeInitVimState_: (cm: CodeMirror) => vimState;
@@ -389,6 +395,7 @@ type Vim = {
     vimKeyFromEvent: (
         /** @todo Documentation incomplete. */
         e: KeyboardEvent,
+        /** @todo Documentation incomplete. */
         vim?: vimState | undefined
     ) => string | undefined;
     /** @todo Documentation incomplete. */
@@ -397,7 +404,9 @@ type Vim = {
         name: string,
         /** @todo Documentation incomplete. */
         value: any,
+        /** @todo Documentation incomplete. */
         cm?: CodeMirrorV | undefined,
+        /** @todo Documentation incomplete. */
         cfg?:
             | {
                   scope?: any;
@@ -408,7 +417,9 @@ type Vim = {
     getOption: (
         /** @todo Documentation incomplete. */
         name: string,
+        /** @todo Documentation incomplete. */
         cm?: CodeMirrorV | undefined,
+        /** @todo Documentation incomplete. */
         cfg?:
             | {
                   scope?: any;
@@ -424,7 +435,9 @@ type Vim = {
             defaultValue: boolean | null | undefined,
             /** @todo Documentation incomplete. */
             type: 'boolean',
+            /** @todo Documentation incomplete. */
             aliases?: string[] | null | undefined,
+            /** @todo Documentation incomplete. */
             callback?: booleanOptionCallback | undefined
         ): void;
         (
@@ -434,7 +447,9 @@ type Vim = {
             defaultValue: number | null | undefined,
             /** @todo Documentation incomplete. */
             type: 'number',
+            /** @todo Documentation incomplete. */
             aliases?: string[] | null | undefined,
+            /** @todo Documentation incomplete. */
             callback?: numberOptionCallback | undefined
         ): void;
         (
@@ -444,7 +459,9 @@ type Vim = {
             defaultValue: string | null | undefined,
             /** @todo Documentation incomplete. */
             type: 'string',
+            /** @todo Documentation incomplete. */
             aliases?: string[] | null | undefined,
+            /** @todo Documentation incomplete. */
             callback?: stringOptionCallback | undefined
         ): void;
     };
@@ -472,6 +489,7 @@ type Vim = {
         cm_: CodeMirror,
         /** @todo Documentation incomplete. */
         key: string,
+        /** @todo Documentation incomplete. */
         origin?: string | undefined
     ) => (() => boolean | undefined) | undefined;
     /** @todo Documentation incomplete. */

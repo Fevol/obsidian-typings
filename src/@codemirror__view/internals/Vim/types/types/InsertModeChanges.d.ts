@@ -6,8 +6,12 @@ export type InsertModeChanges = {
     changes: (InsertModeKey | string | [string, number?])[];
     /** @todo Documentation incomplete. */
     expectCursorActivityForChange: boolean;
+    /** @todo Documentation incomplete. */
     visualBlock?: number;
+    /** @todo Documentation incomplete. */
     maybeReset?: boolean;
+    /** @todo Documentation incomplete. */
     ignoreCount?: number;
+    /** @todo Documentation incomplete. */
     repeatOverride?: number;
 };

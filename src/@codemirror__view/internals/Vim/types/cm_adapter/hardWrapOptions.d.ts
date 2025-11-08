@@ -4,6 +4,8 @@ export type hardWrapOptions = {
     from: number;
     /** @todo Documentation incomplete. */
     to: number;
+    /** @todo Documentation incomplete. */
     column?: number;
+    /** @todo Documentation incomplete. */
     allowMerge?: boolean;
 };

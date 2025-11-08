@@ -7,5 +7,6 @@ export type operatorCommand = allCommands & {
     type: 'operator';
     /** @todo Documentation incomplete. */
     operator: string;
+    /** @todo Documentation incomplete. */
     operatorArgs?: OperatorArgs;
 };

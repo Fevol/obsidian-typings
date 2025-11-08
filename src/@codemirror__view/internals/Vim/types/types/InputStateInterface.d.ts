@@ -17,6 +17,7 @@ export interface InputStateInterface {
     motionArgs: MotionArgs | null;
     /** @todo Documentation incomplete. */
     keyBuffer: string[];
+    /** @todo Documentation incomplete. */
     registerName?: string;
     /** @todo Documentation incomplete. */
     changeQueue: null | {
@@ -25,9 +26,13 @@ export interface InputStateInterface {
         /** @todo Documentation incomplete. */
         removed: string[];
     };
+    /** @todo Documentation incomplete. */
     operatorShortcut?: string;
+    /** @todo Documentation incomplete. */
     selectedCharacter?: string;
+    /** @todo Documentation incomplete. */
     repeatOverride?: number;
+    /** @todo Documentation incomplete. */
     changeQueueList?: InputStateInterface['changeQueue'][];
     /** @todo Documentation incomplete. */
     pushRepeatDigit(n: string): void;

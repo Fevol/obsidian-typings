@@ -12,6 +12,14 @@ import type { OperatorFn } from './types/types/OperatorFn.js';
 import type { CodeMirrorV } from './types/types/CodeMirrorV.js';
 import type { Pos } from './types/types/Pos.js';
 import type { VimStateVim as vimState } from './VimStateVim.js';
+import type { registerController } from './types/vim/registerController.js';
+import type { vimGlobalState } from './types/vim/vimGlobalState.js';
+import type { InsertModeKey } from './types/vim/InsertModeKey.js';
+import type { vimScope } from './types/vim/vimScope.js';
+import type { stringOption } from './types/vim/stringOption.js';
+import type { numberOption } from './types/vim/numberOption.js';
+import type { Register } from './types/vim/Register.js';
+import type { booleanOption } from './types/types/booleanOption.js';
 
 /**
  * @todo Documentation incomplete.
@@ -44,54 +52,13 @@ export interface VimApi {
     defineOperator: (name: string, fn: OperatorFn) => void;
 
     /** @todo Documentation incomplete. */
-    defineOption: {
-        (
-            name: string,
-            defaultValue: boolean | null | undefined,
-            type: 'boolean',
-            aliases?: string[] | null | undefined,
-            callback?: booleanOptionCallback | undefined
-        ): void;
-        (
-            name: string,
-            defaultValue: number | null | undefined,
-            type: 'number',
-            aliases?: string[] | null | undefined,
-            callback?: numberOptionCallback | undefined
-        ): void;
-        (
-            name: string,
-            defaultValue: string | null | undefined,
-            type: 'string',
-            aliases?: string[] | null | undefined,
-            callback?: stringOptionCallback | undefined
-        ): void;
-    };
+    defineOption: booleanOption & numberOption & stringOption;
 
     /** @todo Documentation incomplete. */
-    defineRegister: (
-        name: string,
-        register: {
-            keyBuffer: string[];
-            insertModeChanges: InsertModeChanges[];
-            searchQueries: string[];
-            linewise: boolean;
-            blockwise: boolean;
-            setText(
-                text?: string | undefined,
-                linewise?: boolean | undefined,
-                blockwise?: boolean | undefined
-            ): void;
-            pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(changes: InsertModeChanges): void;
-            pushSearchQuery(query: string): void;
-            clear(): void;
-            toString(): string;
-        }
-    ) => void;
+    defineRegister: (name: string, register: Register) => void;
 
     /** @todo Documentation incomplete. */
-    //TODO missing in
+    //TODO missing in official api, its actually just an action...
     enterInsertMode(
         cm: CodeMirror,
         actionArgs: ActionArgsPartial,
@@ -120,243 +87,17 @@ export interface VimApi {
     findKey: (
         cm_: CodeMirror,
         key: string,
-        origin?: string | undefined
+        origin?: string
     ) => (() => boolean | undefined) | undefined;
 
     /** @todo Documentation incomplete. */
-    getOption: (
-        name: string,
-        cm?: CodeMirrorV | undefined,
-        cfg?:
-            | {
-                  scope?: any;
-              }
-            | undefined
-    ) => any;
+    getOption: (name: string, cm?: CodeMirrorV, cfg?: vimScope) => any;
 
     /** @todo Documentation incomplete. */
-    getRegisterController: () => {
-        registers: {
-            [x: string]: {
-                keyBuffer: string[];
-                insertModeChanges: InsertModeChanges[];
-                searchQueries: string[];
-                linewise: boolean;
-                blockwise: boolean;
-                setText(
-                    text?: string | undefined,
-                    linewise?: boolean | undefined,
-                    blockwise?: boolean | undefined
-                ): void;
-                pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(changes: InsertModeChanges): void;
-                pushSearchQuery(query: string): void;
-                clear(): void;
-                toString(): string;
-            };
-        };
-        unnamedRegister: {
-            keyBuffer: string[];
-            insertModeChanges: InsertModeChanges[];
-            searchQueries: string[];
-            linewise: boolean;
-            blockwise: boolean;
-            setText(
-                text?: string | undefined,
-                linewise?: boolean | undefined,
-                blockwise?: boolean | undefined
-            ): void;
-            pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(changes: InsertModeChanges): void;
-            pushSearchQuery(query: string): void;
-            clear(): void;
-            toString(): string;
-        };
-        pushText(
-            registerName: string | null | undefined,
-            operator: string,
-            text: string,
-            linewise?: boolean | undefined,
-            blockwise?: boolean | undefined
-        ): void;
-        /**
-         * Gets the register named @name.  If one of @name doesn't already exist,
-         * create it.  If @name is invalid, return the unnamedRegister.
-         */
-        getRegister(name?: string | undefined): {
-            keyBuffer: string[];
-            insertModeChanges: InsertModeChanges[];
-            searchQueries: string[];
-            linewise: boolean;
-            blockwise: boolean;
-            setText(
-                text?: string | undefined,
-                linewise?: boolean | undefined,
-                blockwise?: boolean | undefined
-            ): void;
-            pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(changes: InsertModeChanges): void;
-            pushSearchQuery(query: string): void;
-            clear(): void;
-            toString(): string;
-        };
-        isValidRegister(name: any): name is string;
-        shiftNumericRegisters_(): void;
-    };
+    getRegisterController: () => registerController;
 
     /** @todo Documentation incomplete. */
-    getVimGlobalState_: () => {
-        macroModeState: {
-            latestRegister: string | undefined;
-            isPlaying: boolean;
-            isRecording: boolean;
-            replaySearchQueries: string[];
-            onRecordingDone: ((newVal?: string) => void) | undefined;
-            lastInsertModeChanges: InsertModeChanges;
-            exitMacroRecordMode(): void;
-            enterMacroRecordMode(cm: CodeMirror, registerName: string): void;
-        };
-        registerController: {
-            registers: {
-                [x: string]: {
-                    keyBuffer: string[];
-                    linewise: boolean;
-                    blockwise: boolean;
-                    setText(
-                        text?: string | undefined,
-                        linewise?: boolean | undefined,
-                        blockwise?: boolean | undefined
-                    ): void;
-                    pushText(
-                        text: string,
-                        linewise?: boolean | undefined
-                    ): void;
-                    pushInsertModeChanges(changes: InsertModeChanges): void;
-                    pushSearchQuery(query: string): void;
-                    clear(): void;
-                    toString(): string;
-                };
-            };
-            unnamedRegister: {
-                keyBuffer: string[];
-                insertModeChanges: InsertModeChanges[];
-                searchQueries: string[];
-                linewise: boolean;
-                blockwise: boolean;
-                setText(
-                    text?: string | undefined,
-                    linewise?: boolean | undefined,
-                    blockwise?: boolean | undefined
-                ): void;
-                pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(changes: InsertModeChanges): void;
-                pushSearchQuery(query: string): void;
-                clear(): void;
-                toString(): string;
-            };
-            pushText(
-                registerName: string | null | undefined,
-                operator: string,
-                text: string,
-                linewise?: boolean | undefined,
-                blockwise?: boolean | undefined
-            ): void;
-            /**
-             * Gets the register named @name.  If one of @name doesn't already exist,
-             * create it.  If @name is invalid, return the unnamedRegister.
-             */
-            getRegister(name?: string | undefined): {
-                keyBuffer: string[];
-                insertModeChanges: InsertModeChanges[];
-                searchQueries: string[];
-                linewise: boolean;
-                blockwise: boolean;
-                setText(
-                    text?: string | undefined,
-                    linewise?: boolean | undefined,
-                    blockwise?: boolean | undefined
-                ): void;
-                pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(changes: InsertModeChanges): void;
-                pushSearchQuery(query: string): void;
-                clear(): void;
-                toString(): string;
-            };
-            isValidRegister(name: any): name is string;
-            shiftNumericRegisters_(): void;
-        };
-        searchHistoryController: {
-            historyBuffer: string[];
-            iterator: number;
-            initialPrefix: string | null;
-            /**
-             * the input argument here acts a user entered prefix for a small time
-             * until we start autocompletion in which case it is the autocompleted.
-             */
-            nextMatch(input: string, up: boolean): string | undefined;
-            pushInput(input: string): void;
-            reset(): void;
-        };
-        jumpList: ReturnType<
-            () => {
-                cachedCursor: Pos | undefined;
-                add: (cm: CodeMirror, oldCur: Pos, newCur: Pos) => void;
-                find: (
-                    cm: CodeMirror,
-                    offset: number
-                ) =>
-                    | {
-                          line: number;
-                          ch: number;
-                          sticky?: string;
-                      }
-                    | null
-                    | undefined;
-                move: (
-                    cm: CodeMirror,
-                    offset: number
-                ) =>
-                    | {
-                          cm: CodeMirror;
-                          id: number;
-                          offset: number | null;
-                          assoc: number;
-                          clear(): void;
-                          find(): {
-                              line: number;
-                              ch: number;
-                              sticky?: string;
-                          } | null;
-                          update(
-                              change: import('@codemirror/state').ChangeDesc
-                          ): void;
-                      }
-                    | undefined;
-            }
-        >;
-        exCommandHistoryController: {
-            historyBuffer: string[];
-            iterator: number;
-            initialPrefix: string | null;
-            /**
-             * the input argument here acts a user entered prefix for a small time
-             * until we start autocompletion in which case it is the autocompleted.
-             */
-            nextMatch(input: string, up: boolean): string | undefined;
-            pushInput(input: string): void;
-            reset(): void;
-        };
-        lastCharacterSearch: {
-            increment: number;
-            forward: boolean;
-            selectedCharacter: string;
-        };
-        query?: any;
-        isReversed?: boolean;
-        lastSubstituteReplacePart: any;
-        searchQuery?: null;
-        searchIsReversed?: boolean;
-    };
+    getVimGlobalState_: () => vimGlobalState;
 
     /** @todo Documentation incomplete. */
     handleEx: (cm: CodeMirrorV, input: string) => void;
@@ -369,17 +110,7 @@ export interface VimApi {
     ) => undefined | boolean;
 
     /** @todo Documentation incomplete. */
-    InsertModeKey: {
-        new (keyName: string, e: KeyboardEvent): {
-            keyName: string;
-            key: string;
-            ctrlKey: boolean;
-            altKey: boolean;
-            metaKey: boolean;
-            shiftKey: boolean;
-        };
-    };
-
+    InsertModeKey: InsertModeKey;
     /** @todo Documentation incomplete. */
     leaveVimMode: (cm: CodeMirror) => void;
 
@@ -440,11 +171,7 @@ export interface VimApi {
         name: string,
         value: any,
         cm?: CodeMirrorV | undefined,
-        cfg?:
-            | {
-                  scope?: 'local' | 'global';
-              }
-            | undefined
+        cfg?: vimScope
     ) => Error | undefined;
 
     /**
@@ -452,8 +179,8 @@ export interface VimApi {
      * @throws when mapping ex to ex with context defined
      */
     unmap: (lhs: string, ctx?: string) => true | void;
-    //? MISSING MEMBERS from v.6.3.0:
-    // langmap: (langmapString: any, remapCtrl: any) => void;
+    /** @todo Documentation incomplete. */
+    langmap: (langmapString: any, remapCtrl: any) => void;
     // vimKeyFromEvent: (
     //     e: KeyboardEvent,
     //     vim?: vimState | undefined

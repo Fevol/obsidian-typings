@@ -63,6 +63,7 @@ export type vimOperators = {
         ranges: CM5RangeInterface[],
         /** @todo Documentation incomplete. */
         oldAnchor: Pos,
+        /** @todo Documentation incomplete. */
         newHead?: Pos
     ): Pos | void /** @todo Documentation incomplete. */;
 

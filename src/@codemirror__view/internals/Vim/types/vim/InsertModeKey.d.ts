@@ -1,15 +1,14 @@
-/** @todo Documentation incomplete. */
-export type exCommandArgs = {
+export type InsertModeKey = new (keyName: string, e: KeyboardEvent) => {
     /** @todo Documentation incomplete. */
-    callback?: (() => void) | undefined;
+    keyName: string;
     /** @todo Documentation incomplete. */
-    input?: string | undefined;
+    key: string;
     /** @todo Documentation incomplete. */
-    line?: string | undefined;
+    ctrlKey: boolean;
     /** @todo Documentation incomplete. */
-    commandName?: string | undefined;
+    altKey: boolean;
     /** @todo Documentation incomplete. */
-    argString?: string;
+    metaKey: boolean;
     /** @todo Documentation incomplete. */
-    args?: string[];
+    shiftKey: boolean;
 };

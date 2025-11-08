@@ -7,6 +7,8 @@ export type motionCommand = allCommands & {
     type: 'motion';
     /** @todo Documentation incomplete. */
     motion: string;
+    /** @todo Documentation incomplete. */
     motionArgs?: MotionArgsPartial;
+    /** @todo Documentation incomplete. */
     repeatOverride?: number;
 };

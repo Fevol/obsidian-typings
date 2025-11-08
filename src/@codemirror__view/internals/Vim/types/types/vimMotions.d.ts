@@ -161,7 +161,9 @@ export type vimMotions = {
         _cm: CodeMirrorV,
         /** @todo Documentation incomplete. */
         head: Pos,
+        /** @todo Documentation incomplete. */
         motionArgs?: MotionArgs,
+        /** @todo Documentation incomplete. */
         vim?: vimState
     ): Pos;
     /** @todo Documentation incomplete. */

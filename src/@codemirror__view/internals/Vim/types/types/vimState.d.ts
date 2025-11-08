@@ -8,6 +8,7 @@ import type { Marker } from './Marker.js';
 
 /** @todo Documentation incomplete. */
 export type vimState = {
+    /** @todo Documentation incomplete. */
     onPasteFn?: () => void;
     /** @todo Documentation incomplete. */
     sel: {
@@ -28,6 +29,7 @@ export type vimState = {
     visualMode: boolean;
     /** @todo Documentation incomplete. */
     insertMode: boolean;
+    /** @todo Documentation incomplete. */
     pasteFn?: any;
     /** @todo Documentation incomplete. */
     lastSelection: {
@@ -49,7 +51,9 @@ export type vimState = {
     searchState_?: SearchStateInterface;
     /** @todo Documentation incomplete. */
     lastEditActionCommand: actionCommand | void;
+    /** @todo Documentation incomplete. */
     lastPastedText?: string;
+    /** @todo Documentation incomplete. */
     lastMotion?: MotionFn | null;
     /** @todo Documentation incomplete. */
     options: {
@@ -61,16 +65,22 @@ export type vimState = {
     inputState: InputStateInterface;
     /** @todo Documentation incomplete. */
     visualLine: boolean;
+    /** @todo Documentation incomplete. */
     insertModeRepeat?: number;
     /** @todo Documentation incomplete. */
     lastHSPos: number;
     /** @todo Documentation incomplete. */
     lastHPos: number;
+    /** @todo Documentation incomplete. */
     wasInVisualBlock?: boolean;
+    /** @todo Documentation incomplete. */
     insertEnd?: Marker;
     /** @todo Documentation incomplete. */
     status: string;
+    /** @todo Documentation incomplete. */
     exMode?: boolean;
+    /** @todo Documentation incomplete. */
     mode?: string;
+    /** @todo Documentation incomplete. */
     expectLiteralNext?: boolean;
 };

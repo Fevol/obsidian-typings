@@ -1,5 +1,5 @@
 import type { SearchQuery } from '@codemirror/search';
-import type { ChangeDesc } from '@codemirror/state';
+import type { ChangeDesc, SelectionRange } from '@codemirror/state';
 import type { EditorView, ViewUpdate } from '@codemirror/view';
 import type { StringStream } from 'codemirror';
 import type { EditorSelection } from 'obsidian';
@@ -16,34 +16,62 @@ import type { Operation } from './Operation.js';
 import type { NotificationOptions } from './NotificationOptions.js';
 import type { Mutable } from './Mutable.js';
 import type { Marker } from './Marker.js';
+import type { ScrollInfo } from '../../../ScrollInfo.js';
 
-/** @todo Documentation incomplete. */
+type LineHandle = {
+    /** @todo Documentation incomplete. */
+    row: number;
+    /** @todo Documentation incomplete. */
+    index: number;
+};
+type StringStreamClass = StringStream & {
+    new (_: string): StringStream;
+};
+type Commands = {
+    /** @todo Documentation incomplete. */
+    cursorCharLeft: (cm: CodeMirror) => void;
+    /** @todo Documentation incomplete. */
+    redo: (cm: CodeMirror) => void;
+    /** @todo Documentation incomplete. */
+    undo: (cm: CodeMirror) => void;
+    /** @todo Documentation incomplete. */
+    newlineAndIndent: (cm: CodeMirror) => void;
+    /** @todo Documentation incomplete. */
+    indentAuto: (cm: CodeMirror) => void;
+    /** @todo Documentation incomplete. */
+    newlineAndIndentContinueComment: any;
+    /** @todo Documentation incomplete. */
+    save: any;
+};
+type CodeMirrorVimState = {
+    /** @todo Documentation incomplete. */
+    statusbar?: Element | null;
+    /** @todo Documentation incomplete. */
+    dialog?: HTMLElement | null;
+    /** @todo Documentation incomplete. */
+    vimPlugin?: any;
+    /** @todo Documentation incomplete. */
+    vim?: vimState | null;
+    /** @todo Documentation incomplete. */
+    currentNotificationClose?: Function | null;
+    /** @todo Documentation incomplete. */
+    closeVimNotification?: Function | null;
+    /** @todo Documentation incomplete. */
+    keyMap?: string;
+    /** @todo Documentation incomplete. */
+    overwrite?: boolean;
+    /** @todo Documentation incomplete. */
+    textwidth?: number;
+};
 export class CodeMirror {
     /** @todo Documentation incomplete. */
     static isMac: boolean;
     /** @todo Documentation incomplete. */
     static Pos: typeof Pos;
     /** @todo Documentation incomplete. */
-    static StringStream: StringStream & {
-        new (_: string): StringStream;
-    };
+    static StringStream: StringStreamClass;
     /** @todo Documentation incomplete. */
-    static commands: {
-        /** @todo Documentation incomplete. */
-        cursorCharLeft: (cm: CodeMirror) => void;
-        /** @todo Documentation incomplete. */
-        redo: (cm: CodeMirror) => void;
-        /** @todo Documentation incomplete. */
-        undo: (cm: CodeMirror) => void;
-        /** @todo Documentation incomplete. */
-        newlineAndIndent: (cm: CodeMirror) => void;
-        /** @todo Documentation incomplete. */
-        indentAuto: (cm: CodeMirror) => void;
-        /** @todo Documentation incomplete. */
-        newlineAndIndentContinueComment: any;
-        /** @todo Documentation incomplete. */
-        save: any;
-    };
+    static commands: Commands;
     /** @todo Documentation incomplete. */
     static isWordChar: (ch: string) => boolean;
     /** @todo Documentation incomplete. */
@@ -77,17 +105,7 @@ export class CodeMirror {
     static findEnclosingTag: typeof findEnclosingTag;
     cm6: EditorView;
     /** @todo Documentation incomplete. */
-    state: {
-        statusbar?: Element | null;
-        dialog?: HTMLElement | null;
-        vimPlugin?: any;
-        vim?: vimState | null;
-        currentNotificationClose?: Function | null;
-        closeVimNotification?: Function | null;
-        keyMap?: string;
-        overwrite?: boolean;
-        textwidth?: number;
-    };
+    state: CodeMirrorVimState;
     /** @todo Documentation incomplete. */
     marks: Record<string, Marker>;
     /** @todo Documentation incomplete. */
@@ -123,24 +141,14 @@ export class CodeMirror {
     setCursor(line: Pos): void;
     /** @todo Documentation incomplete. */
     getCursor(p?: 'head' | 'anchor' | 'start' | 'end'): Pos;
-    listSelections(): {
-        /** @todo Documentation incomplete. */
-        anchor: Pos;
-        /** @todo Documentation incomplete. */
-        head: Pos;
-    }[];
+    listSelections(): CM5RangeInterface[];
     /** @todo Documentation incomplete. */
     setSelections(p: CM5RangeInterface[], primIndex?: number): void;
     /** @todo Documentation incomplete. */
     setSelection(anchor: Pos, head: Pos, options?: any): void;
     /** @todo Documentation incomplete. */
     getLine(row: number): string;
-    getLineHandle(row: number): {
-        /** @todo Documentation incomplete. */
-        row: number;
-        /** @todo Documentation incomplete. */
-        index: number;
-    };
+    getLineHandle(row: number): LineHandle;
     /** @todo Documentation incomplete. */
     getLineNumber(handle: any): number | null;
     /** @todo Documentation incomplete. */
@@ -218,6 +226,7 @@ export class CodeMirror {
     setBookmark(
         /** @todo Documentation incomplete. */
         cursor: Pos,
+        /** @todo Documentation incomplete. */
         options?: {
             /** @todo Documentation incomplete. */
             insertLeft: boolean;
@@ -258,8 +267,10 @@ export class CodeMirror {
         amount: number,
         /** @todo Documentation incomplete. */
         unit: 'page' | 'line',
+        /** @todo Documentation incomplete. */
         goalColumn?: number
     ): Pos & {
+        /** @todo Documentation incomplete. */
         hitSide?: boolean;
     };
     /** @todo Documentation incomplete. */
@@ -288,20 +299,7 @@ export class CodeMirror {
         /** @todo Documentation incomplete. */
         mode: 'div' | 'local'
     ): Pos;
-    getScrollInfo(): {
-        /** @todo Documentation incomplete. */
-        left: number;
-        /** @todo Documentation incomplete. */
-        top: number;
-        /** @todo Documentation incomplete. */
-        height: number;
-        /** @todo Documentation incomplete. */
-        width: number;
-        /** @todo Documentation incomplete. */
-        clientHeight: number;
-        /** @todo Documentation incomplete. */
-        clientWidth: number;
-    };
+    getScrollInfo(): ScrollInfo;
     /** @todo Documentation incomplete. */
     scrollTo(x?: number | null, y?: number | null): void;
     /** @todo Documentation incomplete. */
@@ -356,7 +354,9 @@ export class CodeMirror {
     forEachSelection(command: Function): void;
     /** @todo Documentation incomplete. */
     hardWrap(options: hardWrapOptions): number;
+    /** @todo Documentation incomplete. */
     showMatchesOnScrollbar?: Function;
+    /** @todo Documentation incomplete. */
     save?: Function;
     static keyName?: Function;
 }

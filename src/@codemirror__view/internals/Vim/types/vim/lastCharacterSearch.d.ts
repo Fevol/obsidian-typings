@@ -1,9 +1,8 @@
-/** @todo Documentation incomplete. */
-export type Pos = {
+export type lastCharacterSearch = {
     /** @todo Documentation incomplete. */
-    line: number;
+    increment: number;
     /** @todo Documentation incomplete. */
-    ch: number;
+    forward: boolean;
     /** @todo Documentation incomplete. */
-    sticky?: string;
+    selectedCharacter: string;
 };
