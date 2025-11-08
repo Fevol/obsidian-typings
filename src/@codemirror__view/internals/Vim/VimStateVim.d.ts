@@ -1,12 +1,10 @@
-import type {
-    actionCommand,
-    InputStateInterface,
-    Marker,
-    MotionFn,
-    Pos,
-    SearchStateInterface,
-    vimOption,
-} from 'types';
+import type { Pos } from './types/cm_adapter/Pos.js';
+import type { actionCommand } from './types/types/actionCommand.js';
+import type { InputStateInterface } from './types/types/InputStateInterface.js';
+import type { Marker } from './types/types/Marker.js';
+import type { MotionFn } from './types/types/MotionFn.js';
+import type { SearchStateInterface } from './types/types/SearchStateInterface.js';
+import type { vimOption } from './types/types/vimOption.js';
 import type { VimStateVimInputState } from './VimStateVimInputState.d.ts';
 import type { VimStateVimLastMotion } from './VimStateVimLastMotion.d.ts';
 

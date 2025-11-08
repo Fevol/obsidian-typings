@@ -1,6 +1,16 @@
-import type { ActionArgsPartial } from 'types';
-// import type { VimEditor } from './VimEditor.d.ts';
-// import type { VimState } from './VimState.d.ts';
+import type { CodeMirror } from './types/cm_adapter/cm-adapter-main.js';
+import type { InsertModeChanges } from './types/types/InsertModeChanges.js';
+import type { vimKey } from './types/types/vimKey.js';
+import type { ExFn } from './types/types/ExFn.js';
+import type { stringOptionCallback } from './types/types/stringOptionCallback.js';
+import type { numberOptionCallback } from './types/types/numberOptionCallback.js';
+import type { booleanOptionCallback } from './types/types/booleanOptionCallback.js';
+import type { MotionFn } from './types/types/MotionFn.js';
+import type { ActionFn } from './types/types/ActionFn.js';
+import type { ActionArgsPartial } from './types/types/ActionArgsPartial.js';
+import type { OperatorFn } from './types/types/OperatorFn.js';
+import type { CodeMirrorV } from './types/types/CodeMirrorV.js';
+import type { Pos } from './types/types/Pos.js';
 import type { VimStateVim as vimState } from './VimStateVim.js';
 
 /**
@@ -17,25 +27,21 @@ export interface VimApi {
     suppressErrorLogging: boolean;
 
     /** @todo Documentation incomplete. */
-    _mapCommand: (command: import('types').vimKey) => void;
+    _mapCommand: (command: vimKey) => void;
     /** Not Implemented yet*/
     buildKeyMap: () => void;
 
     /** @todo Documentation incomplete. */
-    defineAction: (name: string, fn: import('types').ActionFn) => void;
+    defineAction: (name: string, fn: ActionFn) => void;
 
     /** @todo Documentation incomplete. */
-    defineEx: (
-        name: string,
-        prefix: string | undefined,
-        func: import('types').ExFn
-    ) => void;
+    defineEx: (name: string, prefix: string | undefined, func: ExFn) => void;
 
     /** @todo Documentation incomplete. */
-    defineMotion: (name: string, fn: import('types').MotionFn) => void;
+    defineMotion: (name: string, fn: MotionFn) => void;
 
     /** @todo Documentation incomplete. */
-    defineOperator: (name: string, fn: import('types').OperatorFn) => void;
+    defineOperator: (name: string, fn: OperatorFn) => void;
 
     /** @todo Documentation incomplete. */
     defineOption: {
@@ -44,21 +50,21 @@ export interface VimApi {
             defaultValue: boolean | null | undefined,
             type: 'boolean',
             aliases?: string[] | null | undefined,
-            callback?: import('types').booleanOptionCallback | undefined
+            callback?: booleanOptionCallback | undefined
         ): void;
         (
             name: string,
             defaultValue: number | null | undefined,
             type: 'number',
             aliases?: string[] | null | undefined,
-            callback?: import('types').numberOptionCallback | undefined
+            callback?: numberOptionCallback | undefined
         ): void;
         (
             name: string,
             defaultValue: string | null | undefined,
             type: 'string',
             aliases?: string[] | null | undefined,
-            callback?: import('types').stringOptionCallback | undefined
+            callback?: stringOptionCallback | undefined
         ): void;
     };
 
@@ -67,7 +73,7 @@ export interface VimApi {
         name: string,
         register: {
             keyBuffer: string[];
-            insertModeChanges: import('types').InsertModeChanges[];
+            insertModeChanges: InsertModeChanges[];
             searchQueries: string[];
             linewise: boolean;
             blockwise: boolean;
@@ -77,9 +83,7 @@ export interface VimApi {
                 blockwise?: boolean | undefined
             ): void;
             pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(
-                changes: import('types').InsertModeChanges
-            ): void;
+            pushInsertModeChanges(changes: InsertModeChanges): void;
             pushSearchQuery(query: string): void;
             clear(): void;
             toString(): string;
@@ -89,25 +93,19 @@ export interface VimApi {
     /** @todo Documentation incomplete. */
     //TODO missing in
     enterInsertMode(
-        cm: import('cm_adapter').CodeMirror,
+        cm: CodeMirror,
         actionArgs: ActionArgsPartial,
         vum: vimState
     ): void;
 
     /** @todo Documentation incomplete. */
-    enterVimMode: (cm: import('cm_adapter').CodeMirror) => void;
+    enterVimMode: (cm: CodeMirror) => void;
 
     /** @todo Documentation incomplete. */
-    exitInsertMode: (
-        cm: import('types').CodeMirrorV,
-        keepCursor?: boolean | undefined
-    ) => void;
+    exitInsertMode: (cm: CodeMirrorV, keepCursor?: boolean | undefined) => void;
 
     /** @todo Documentation incomplete. */
-    exitVisualMode: (
-        cm: import('types').CodeMirrorV,
-        moveHead?: boolean | undefined
-    ) => void;
+    exitVisualMode: (cm: CodeMirrorV, moveHead?: boolean | undefined) => void;
 
     /**
      * This is the outermost function called by CodeMirror, after keys have
@@ -120,7 +118,7 @@ export interface VimApi {
      * returns true.
      */
     findKey: (
-        cm_: import('cm_adapter').CodeMirror,
+        cm_: CodeMirror,
         key: string,
         origin?: string | undefined
     ) => (() => boolean | undefined) | undefined;
@@ -128,7 +126,7 @@ export interface VimApi {
     /** @todo Documentation incomplete. */
     getOption: (
         name: string,
-        cm?: import('types').CodeMirrorV | undefined,
+        cm?: CodeMirrorV | undefined,
         cfg?:
             | {
                   scope?: any;
@@ -141,7 +139,7 @@ export interface VimApi {
         registers: {
             [x: string]: {
                 keyBuffer: string[];
-                insertModeChanges: import('types').InsertModeChanges[];
+                insertModeChanges: InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
@@ -151,9 +149,7 @@ export interface VimApi {
                     blockwise?: boolean | undefined
                 ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(
-                    changes: import('types').InsertModeChanges
-                ): void;
+                pushInsertModeChanges(changes: InsertModeChanges): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
@@ -161,7 +157,7 @@ export interface VimApi {
         };
         unnamedRegister: {
             keyBuffer: string[];
-            insertModeChanges: import('types').InsertModeChanges[];
+            insertModeChanges: InsertModeChanges[];
             searchQueries: string[];
             linewise: boolean;
             blockwise: boolean;
@@ -171,9 +167,7 @@ export interface VimApi {
                 blockwise?: boolean | undefined
             ): void;
             pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(
-                changes: import('types').InsertModeChanges
-            ): void;
+            pushInsertModeChanges(changes: InsertModeChanges): void;
             pushSearchQuery(query: string): void;
             clear(): void;
             toString(): string;
@@ -191,7 +185,7 @@ export interface VimApi {
          */
         getRegister(name?: string | undefined): {
             keyBuffer: string[];
-            insertModeChanges: import('types').InsertModeChanges[];
+            insertModeChanges: InsertModeChanges[];
             searchQueries: string[];
             linewise: boolean;
             blockwise: boolean;
@@ -201,9 +195,7 @@ export interface VimApi {
                 blockwise?: boolean | undefined
             ): void;
             pushText(text: string, linewise?: boolean | undefined): void;
-            pushInsertModeChanges(
-                changes: import('types').InsertModeChanges
-            ): void;
+            pushInsertModeChanges(changes: InsertModeChanges): void;
             pushSearchQuery(query: string): void;
             clear(): void;
             toString(): string;
@@ -220,12 +212,9 @@ export interface VimApi {
             isRecording: boolean;
             replaySearchQueries: string[];
             onRecordingDone: ((newVal?: string) => void) | undefined;
-            lastInsertModeChanges: import('types').InsertModeChanges;
+            lastInsertModeChanges: InsertModeChanges;
             exitMacroRecordMode(): void;
-            enterMacroRecordMode(
-                cm: import('cm_adapter').CodeMirror,
-                registerName: string
-            ): void;
+            enterMacroRecordMode(cm: CodeMirror, registerName: string): void;
         };
         registerController: {
             registers: {
@@ -242,9 +231,7 @@ export interface VimApi {
                         text: string,
                         linewise?: boolean | undefined
                     ): void;
-                    pushInsertModeChanges(
-                        changes: import('types').InsertModeChanges
-                    ): void;
+                    pushInsertModeChanges(changes: InsertModeChanges): void;
                     pushSearchQuery(query: string): void;
                     clear(): void;
                     toString(): string;
@@ -252,7 +239,7 @@ export interface VimApi {
             };
             unnamedRegister: {
                 keyBuffer: string[];
-                insertModeChanges: import('types').InsertModeChanges[];
+                insertModeChanges: InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
@@ -262,9 +249,7 @@ export interface VimApi {
                     blockwise?: boolean | undefined
                 ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(
-                    changes: import('types').InsertModeChanges
-                ): void;
+                pushInsertModeChanges(changes: InsertModeChanges): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
@@ -282,7 +267,7 @@ export interface VimApi {
              */
             getRegister(name?: string | undefined): {
                 keyBuffer: string[];
-                insertModeChanges: import('types').InsertModeChanges[];
+                insertModeChanges: InsertModeChanges[];
                 searchQueries: string[];
                 linewise: boolean;
                 blockwise: boolean;
@@ -292,9 +277,7 @@ export interface VimApi {
                     blockwise?: boolean | undefined
                 ): void;
                 pushText(text: string, linewise?: boolean | undefined): void;
-                pushInsertModeChanges(
-                    changes: import('types').InsertModeChanges
-                ): void;
+                pushInsertModeChanges(changes: InsertModeChanges): void;
                 pushSearchQuery(query: string): void;
                 clear(): void;
                 toString(): string;
@@ -316,14 +299,10 @@ export interface VimApi {
         };
         jumpList: ReturnType<
             () => {
-                cachedCursor: import('types').Pos | undefined;
-                add: (
-                    cm: import('cm_adapter').CodeMirror,
-                    oldCur: import('types').Pos,
-                    newCur: import('types').Pos
-                ) => void;
+                cachedCursor: Pos | undefined;
+                add: (cm: CodeMirror, oldCur: Pos, newCur: Pos) => void;
                 find: (
-                    cm: import('cm_adapter').CodeMirror,
+                    cm: CodeMirror,
                     offset: number
                 ) =>
                     | {
@@ -334,11 +313,11 @@ export interface VimApi {
                     | null
                     | undefined;
                 move: (
-                    cm: import('cm_adapter').CodeMirror,
+                    cm: CodeMirror,
                     offset: number
                 ) =>
                     | {
-                          cm: import('cm_adapter').CodeMirror;
+                          cm: CodeMirror;
                           id: number;
                           offset: number | null;
                           assoc: number;
@@ -380,11 +359,11 @@ export interface VimApi {
     };
 
     /** @todo Documentation incomplete. */
-    handleEx: (cm: import('types').CodeMirrorV, input: string) => void;
+    handleEx: (cm: CodeMirrorV, input: string) => void;
 
     /** @todo Documentation incomplete. */
     handleKey: (
-        cm: import('cm_adapter').CodeMirror,
+        cm: CodeMirror,
         key: string,
         origin: string
     ) => undefined | boolean;
@@ -402,7 +381,7 @@ export interface VimApi {
     };
 
     /** @todo Documentation incomplete. */
-    leaveVimMode: (cm: import('cm_adapter').CodeMirror) => void;
+    leaveVimMode: (cm: CodeMirror) => void;
 
     /** @todo Documentation incomplete. */
     map: (lhs: string, rhs: string, ctx: string) => void;
@@ -422,9 +401,7 @@ export interface VimApi {
     ) => void;
 
     /** @todo Documentation incomplete. */
-    maybeInitVimState_: (
-        cm: import('cm_adapter').CodeMirror
-    ) => import('types').vimState;
+    maybeInitVimState_: (cm: CodeMirror) => vimState;
 
     /**
      *
@@ -434,7 +411,7 @@ export interface VimApi {
      * @returns whether the handling was successful
      */
     multiSelectHandleKey: (
-        cm_: import('cm_adapter').CodeMirror,
+        cm_: CodeMirror,
         key: string,
         origin: string
     ) => boolean | undefined;
@@ -462,7 +439,7 @@ export interface VimApi {
     setOption: (
         name: string,
         value: any,
-        cm?: import('types').CodeMirrorV | undefined,
+        cm?: CodeMirrorV | undefined,
         cfg?:
             | {
                   scope?: 'local' | 'global';
@@ -475,10 +452,10 @@ export interface VimApi {
      * @throws when mapping ex to ex with context defined
      */
     unmap: (lhs: string, ctx?: string) => true | void;
-    // MISSING MEMBERS from v.6.3.0:
+    //? MISSING MEMBERS from v.6.3.0:
     // langmap: (langmapString: any, remapCtrl: any) => void;
     // vimKeyFromEvent: (
     //     e: KeyboardEvent,
-    //     vim?: import('types').vimState | undefined
+    //     vim?: vimState | undefined
     // ) => string | undefined;
 }
