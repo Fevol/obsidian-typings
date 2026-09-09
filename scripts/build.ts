@@ -1,4 +1,5 @@
 import { exitIfScriptDisabled } from './helpers/env-toggle.ts';
+import { getPackageManagerRunCommand } from './helpers/package-manager.ts';
 import { execFromRoot } from './helpers/root.ts';
 
 exitIfScriptDisabled();
@@ -25,5 +26,5 @@ const BUILD_STEPS = [
 
 for (const step of BUILD_STEPS) {
   console.log(`Executing ${step}...`);
-  await execFromRoot(`npm run ${step}`);
+  await execFromRoot([...getPackageManagerRunCommand(), step]);
 }
