@@ -10,6 +10,7 @@ import {
   isEnvVariableOff,
   loadEnvFileIfExists
 } from './helpers/env-toggle.ts';
+import { getPackageManagerRunCommand } from './helpers/package-manager.ts';
 
 interface NanoStagedContext {
   filenames: string[];
@@ -21,14 +22,22 @@ const BATCH_SIZE = 30;
 
 const NANO_STAGED_ENV_VARIABLE = 'NANO_STAGED';
 
+/**
+ * The `<manager> run` prefix every task below is built on, resolved once for the process.
+ *
+ * Detection is a handful of `existsSync` calls and at most one `package.json` read - no `.env` read and
+ * no `process.exit`, which is what lets it sit at module scope beside the tasks it prefixes.
+ */
+const PACKAGE_MANAGER_RUN_COMMAND = getPackageManagerRunCommand().join(' ');
+
 const tasks: Record<string, NanoStagedHandler> = {
-  '*': ({ filenames }) => batch(filenames).map((b) => `npm run spellcheck -- ${join(b)}`),
+  '*': ({ filenames }) => batch(filenames).map((b) => `${PACKAGE_MANAGER_RUN_COMMAND} spellcheck -- ${join(b)}`),
   '*.{ts,tsx,mts}': ({ filenames }) =>
     batch(filenames).flatMap((b) => [
-      `npm run lint:fix -- ${join(b)}`,
-      `npm run format -- ${join(b)}`
+      `${PACKAGE_MANAGER_RUN_COMMAND} lint:fix -- ${join(b)}`,
+      `${PACKAGE_MANAGER_RUN_COMMAND} format -- ${join(b)}`
     ]),
-  '*.md': ({ filenames }) => batch(filenames).map((b) => `npm run lint:md:fix -- ${join(b)}`)
+  '*.md': ({ filenames }) => batch(filenames).map((b) => `${PACKAGE_MANAGER_RUN_COMMAND} lint:md:fix -- ${join(b)}`)
 };
 
 /**
